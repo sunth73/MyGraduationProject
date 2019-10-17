@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>宿舍信息维护</title>
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/demo/demo.css">
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+<script type="text/javascript" src="../utiljs/dateUtil.js"></script>
+<script type="text/javascript" src="../validate/validate.js"></script>
+<script type="text/javascript" src="json/nation.js"></script>
+<script type="text/javascript" src="json/policital.js"></script>
+<script type="text/javascript">
+	var flag="0";//判断模态框用途(添加/修改)
+	var resultNum="";
+	/*
+	* 初始化加载数据
+	* */
+	$(function(){
+	    var message={
+
+		}
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/dormList",message);
+        $('#dg').datagrid({
+            data:msg.body,
+            singleSelect:false,
+            title:'宿舍信息维护',
+            fitColumns:true,
+            // pagination:true,
+			rownumbers:true,
+			fit:true,
+			toolbar:"#tb",
+            columns:[[
+                {checkbox: true},
+                {field:'dormNum',title:'宿舍号',width:100,align:'center'},
+                {field:'dormClassNum',title:'所属班级',width:100,align:'center'},
+                {field:'dormUserName',title:'宿管名称',width:100,align:'center'}
+
+            ]],
+
+        });
+	});
+	/*条件搜索*/
+    function search () {
+        var message={
+            "teaName":$("#tname").val()
+			// "teaCalss":
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+        $('#dg').datagrid({
+            data: msg.body
+        });
+    };
+    /**
+	 * 添加--添加框
+     */
+    function addteacher() {
+        flag=1;
+        $('#dlg').dialog({
+
+            title: '添加宿舍',
+            width: 300,
+            height: 200,
+            closed: false,
+            cache: false,
+            modal: true,
+            buttons:"#dlg-buttons",
+            onOpen:function () {
+                var message={}
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tclass/classList",message);
+                $('#dormClassNum').combobox({
+                    data:msg.body,
+                    textField:'tcClassNum',
+                    valueField:'tcClassNum'
+                });
+                var messag={
+                    "roleid":2
+				}
+                var ms= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",messag);
+                $('#dormUserId').combobox({
+                    data:ms.body,
+                    textField:'empname',
+                    valueField:'userid'
+                });
+                $("#dormNum").removeAttr('readOnly','true');
+            },
+			/*
+			* 新增后刷新页面
+			* */
+			onClose:function () {
+                if(resultNum=="0"){
+                	 $.messager.alert('info','添加成功');
+				}else if(resultNum=="1"){
+                    $.messager.alert('warn','添加失败');
+                }
+                resultNum="";
+				flag="0";
+                $("#dlg").form('clear');//关闭是清空form表单数据
+                var message={
+
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/dormList",message);
+                $('#dg').datagrid({
+                    data: msg.body
+                });
+            }
+        });
+    };
+
+    /*
+    * 修改
+    * */
+    function updateteacher() {
+        debugger;
+        flag="2";
+        var rows = $('#dg').datagrid('getSelections');
+        if(rows==undefined || rows.length != 1){
+            $.messager.alert('info','请选择要修改的一条数据');
+            return false;
+		}
+        $('#dlg').dialog({
+            title: '修改信息',
+            width: 600,
+            height: 450,
+            closed: false,
+            cache: false,
+            modal: true,
+            buttons:"#dlg-buttons",
+            onOpen:function () {
+                var message={}
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tclass/classList",message);
+                $('#dormClassNum').combobox({
+                    data:msg.body,
+                    textField:'tcClassNum',
+                    valueField:'tcClassNum'
+                });
+                var messag={
+                    "roleid":2
+                }
+                var ms= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",messag);
+                $('#dormUserId').combobox({
+                    data:ms.body,
+                    textField:'empname',
+                    valueField:'userid'
+                });
+
+				console.log(rows[0]);
+                $("#dormNum").val(rows[0].dormNum);
+                $("#dormNum").attr('readOnly','true');
+                $('#dormClassNum').combobox('setValue', rows[0].dormClassNum);
+                $('#dormUserId').combobox('setValue', rows[0].dormUserId);
+                $("#dormId").val(rows[0].dormId);
+
+            },
+            /*
+            * 修改后后刷新页面
+            * */
+            onClose:function () {
+                if(resultNum=="0"){
+                    $.messager.alert('info','修改成功');
+                }else if(resultNum=="1"){
+                    $.messager.alert('warn','修改失败');
+				}else if(resultNum=="2"){
+                    $.messager.alert('warn','修改异常');
+                }
+                resultNum="";
+                flag="0";
+                $("#dlg").form('clear');//关闭是清空form表单数据
+                var message={
+
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/dormList",message);
+                $('#dg').datagrid({
+                    data: msg.body
+                });
+            }
+        });
+    }
+    /**
+     * 添加/修改数据
+     */
+    function saveStu() {
+        debugger;
+        var message={
+            "dormNum":$("#dormNum").val(),
+            "dormClassNum":$("#dormClassNum").combobox('getValue'),
+            "dormUserId":$("#dormUserId").combobox('getValue'),
+			"dormId":$("#dormId").val()
+        }
+        console.log(message);
+        if(flag=="1"){
+            var msg=jQuery.fn.commonPlugin.commonAjaxJson("/dorm/adddorm",message);
+            resultNum=msg.header.resultCode;
+        }else if(flag=="2"){
+            var msg1=jQuery.fn.commonPlugin.commonAjaxJson("/dorm/updatedorm",message);
+            console.log(msg1);
+            resultNum=msg1.header.resultCode;
+        }
+        $('#dlg').dialog("close");
+    }
+
+    /**
+     * 关闭新增/修改页面窗口
+     */
+    function closeUserAddDialog() {
+        $('#dlg').dialog("close");
+
+    }
+
+    /**
+	 * 删除相关
+     */
+    function deleteteacher() {
+        var rows = $('#dg').datagrid('getSelections');
+        if(rows.length<1){
+            $.messager.alert('系统提示','请选择要删除的数据');
+            return false;
+        }else{
+            $.messager.confirm('系统提示', '确定删除'+rows.length+'条数据？', function(r){
+                if (r){
+                    var msg=jQuery.fn.commonPlugin.commonAjaxJson("/dorm/deletedorm",rows);
+                    if(msg!= undefined && msg.header.resultCode=="0"){
+                        $.messager.alert('info','删除成功');
+                        /*
+                        * 刷新页面
+                        * */
+                        var message={
+
+                        }
+                        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/dormList",message);
+                        $('#dg').datagrid({
+                            data: msg.body
+                        });
+					}else {
+                        $.messager.alert('info','删除失败');
+					}
+
+                }
+            });
+		}
+    }
+
+	function closestu() {
+        $('#dd').dialog("close");
+    }
+
+</script>
+</head>
+<body style="margin: 1px;">
+<!--用户列表-->
+<table id="dg" class="easyui-datagrid">
+</table>
+<!--功能按钮-->
+<div id="tb">
+	<div>
+		<a href="javascript:addteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加</a>
+		<a href="javascript:updateteacher()" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+		<a href="javascript:deleteteacher()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+	</div>
+</div>
+
+<!--添加/修改-->
+<div id="dlg">
+	<form id="form">
+		<table cellspacing="5px;">
+
+			<tr>
+				<td>宿舍号：</td>
+				<td>
+					<input id="dormId" type="hidden"/>
+					<input type="text" id="dormNum" name="dormNum" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>班  级：</td>
+				<td><input type="text" id="dormClassNum" name="dormClassNum" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>宿管名称：</td>
+				<td><input type="text" id="dormUserId" name="dormUserId" class="easyui-validatebox" /></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+<div id="dlg-buttons">
+	<a href="javascript:saveStu()" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:closeUserAddDialog()" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+<div id="dd">
+	<form  id="upload" action="/auth/importUser" method="post" enctype="multipart/form-data">
+		<input type="file" class="easyui-filebox" id="bu" name="file"/><span id="msm"></span>
+	</form>
+</div>
+<div id="dlg-button">
+	<a href="javascript:upstu()" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:closestu()" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+</body>
+</html>

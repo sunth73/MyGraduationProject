@@ -1,0 +1,77 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>发布公告</title><link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/student.css">
+	<link rel="stylesheet" href="../kindeditor/themes/default/default.css" />
+	<script src="../js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+	<!--<script src="../kindeditor/kindeditor.js"></script>-->
+	<script src="../kindeditor/kindeditor-all.js"></script>
+	<script src="../kindeditor/kindeditor-all-min.js"></script>
+	<!--<script charset="utf-8" src="../kindeditor/kindeditor-min.js"></script>-->
+	<script charset="utf-8" src="../kindeditor/lang/zh-CN.js"></script>
+	<script type="text/javascript">
+        $(function () {
+            $("#save").show();
+            //详情编辑器
+            KindEditor.ready(function (K) {
+                this.editor
+                    = K.create('textarea[id="editor"]', {
+                    items: ['source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+                        'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                        'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                        'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                        'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                        'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'multiimage',
+                        'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+                        'anchor', 'link', 'unlink'],
+                    // uploadJson: '/images',//指定上传图片的服务器端程序
+                    // fileManagerJson: '/images',//指定浏览远程图片的服务器端程序
+                    allowFileManager: true
+                });
+            });
+        });
+        function save() {
+            debugger;
+            currentUser = JSON.parse(sessionStorage.getItem("loginUser"));
+            var message={
+                "creator":currentUser.userid,
+				"title":$("#title").val(),
+				"text":editor.html()
+            }
+            var msg= jQuery.fn.commonPlugin.commonAjaxJson("/notice/add",message);
+            if(msg.header.resultCode==0){
+                $.messager.alert("提示","发布公告成功");
+                $("#save").hide();
+			}else{
+                $.messager.alert("提示","发布公告失败");
+			}
+        }
+	</script>
+</head>
+<body>
+	<div data-options="region:'center',title:'发布公告'" style="padding:5px;background:#eee;">
+		<div>
+			<table style="margin: auto;border-collapse:separate; border-spacing:0px 20px;">
+				<tr>
+					<th>公告标题：</th>
+					<td><input id="title" style="width: 50%;height: 20px"></input></td>
+				</tr>
+				<tr>
+					<th>公告内容：</th>
+					<td><textarea id="editor" style="width:600px;height:400px;visibility:hidden;"></textarea></td>
+				</tr>
+			</table>
+		</div>
+		<div id="dlg-buttons" style="margin-left: 50%">
+			<a href="javascript:save()" class="easyui-linkbutton" iconCls="icon-ok" id="save">发布</a>
+		</div>
+	</div>
+</body>
+</html>

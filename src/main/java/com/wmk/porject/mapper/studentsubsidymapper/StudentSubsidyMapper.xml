@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.studentsubsidymapper.StudentSubsidyMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.StudentSubsidy" >
+    <id column="rec_id" property="recId" jdbcType="VARCHAR" />
+    <result column="t_user_id" property="tUserId" jdbcType="VARCHAR" />
+    <result column="t_subsidy_id" property="tSubsidyId" jdbcType="VARCHAR" />
+    <result column="t_stu_card_num" property="tStuCardNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rec_id, t_user_id, t_subsidy_id
+  </sql>
+  <select id="stusubList" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_student_subsidy
+    where 1=1
+    <if test="tStuCardNum!=null and ''!=tStuCardNum">
+      and t_stu_card_num=#{tStuCardNum}
+    </if>
+    and t_user_id = #{tUserId,jdbcType=VARCHAR}
+    and t_subsidy_id = #{tSubsidyId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_student_subsidy
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_student_subsidy
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.StudentSubsidy" >
+    insert into t_student_subsidy (rec_id, t_user_id, t_subsidy_id,t_stu_card_num
+      )
+    values (#{recId,jdbcType=VARCHAR}, #{tUserId,jdbcType=VARCHAR}, #{tSubsidyId,jdbcType=VARCHAR},#{tStuCardNum}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.StudentSubsidy" >
+    insert into t_student_subsidy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recId != null" >
+        rec_id,
+      </if>
+      <if test="tUserId != null" >
+        t_user_id,
+      </if>
+      <if test="tSubsidyId != null" >
+        t_subsidy_id,
+      </if>
+      <if test="tStuCardNum != null" >
+        t_stu_card_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recId != null" >
+        #{recId,jdbcType=VARCHAR},
+      </if>
+      <if test="tUserId != null" >
+        #{tUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="tSubsidyId != null" >
+        #{tSubsidyId,jdbcType=VARCHAR},
+      </if>
+      <if test="tStuCardNum != null" >
+        #{tSubsidyId},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.StudentSubsidy" >
+    update t_student_subsidy
+    <set >
+      <if test="tUserId != null" >
+        t_user_id = #{tUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="tSubsidyId != null" >
+        t_subsidy_id = #{tSubsidyId,jdbcType=VARCHAR},
+      </if>
+      <if test="tStuCardNum != null" >
+        t_stu_card_num=#{tStuCardNum},
+      </if>
+    </set>
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.StudentSubsidy" >
+    update t_student_subsidy
+    set t_user_id = #{tUserId,jdbcType=VARCHAR},
+      t_subsidy_id = #{tSubsidyId,jdbcType=VARCHAR},
+      t_stu_card_num=#{tStuCardNum}
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </update>
+</mapper>

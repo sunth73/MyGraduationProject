@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.scoremapper.ScoreMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Score" >
+    <id column="rec_id" property="recId" jdbcType="VARCHAR" />
+    <result column="s_stu_id" property="sStuId" jdbcType="VARCHAR" />
+    <result column="s_sub_code" property="sSubCode" jdbcType="VARCHAR" />
+    <result column="s_score" property="sScore" jdbcType="VARCHAR" />
+    <result column="s_semester" property="sSemester" jdbcType="VARCHAR" />
+    <result column="s_exam_id" property="sExamId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rec_id, s_stu_id, s_sub_code, s_score, s_semester,s_exam_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_score
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_score
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Score" >
+    insert into t_score (rec_id, s_stu_id, s_sub_code, 
+      s_score, s_semester)
+    values (#{recId,jdbcType=VARCHAR}, #{sStuId,jdbcType=VARCHAR}, #{sSubCode,jdbcType=VARCHAR}, 
+      #{sScore,jdbcType=VARCHAR}, #{sSemester,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Score" >
+    insert into t_score
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recId != null" >
+        rec_id,
+      </if>
+      <if test="sStuId != null" >
+        s_stu_id,
+      </if>
+      <if test="sSubCode != null" >
+        s_sub_code,
+      </if>
+      <if test="sScore != null" >
+        s_score,
+      </if>
+      <if test="sSemester != null" >
+        s_semester,
+      </if>
+      <if test="sExamId != null" >
+        s_exam_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recId != null" >
+        #{recId,jdbcType=VARCHAR},
+      </if>
+      <if test="sStuId != null" >
+        #{sStuId,jdbcType=VARCHAR},
+      </if>
+      <if test="sSubCode != null" >
+        #{sSubCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sScore != null" >
+        #{sScore,jdbcType=VARCHAR},
+      </if>
+      <if test="sSemester != null" >
+        #{sSemester,jdbcType=VARCHAR},
+      </if>
+      <if test="sExamId != null" >
+        #{sExamId},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Score" >
+    update t_score
+    <set >
+      <if test="sStuId != null" >
+        s_stu_id = #{sStuId,jdbcType=VARCHAR},
+      </if>
+      <if test="sSubCode != null" >
+        s_sub_code = #{sSubCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sScore != null" >
+        s_score = #{sScore,jdbcType=VARCHAR},
+      </if>
+      <if test="sSemester != null" >
+        s_semester = #{sSemester,jdbcType=VARCHAR},
+      </if>
+      <if test="sExamId != null" >
+        s_exam_id=#{sExamId},
+      </if>
+    </set>
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Score" >
+    update t_score
+    set s_stu_id = #{sStuId,jdbcType=VARCHAR},
+      s_sub_code = #{sSubCode,jdbcType=VARCHAR},
+      s_score = #{sScore,jdbcType=VARCHAR},
+      s_semester = #{sSemester,jdbcType=VARCHAR}
+    where rec_id = #{recId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectScoreForClass" resultType="com.wmk.porject.request.ScoreRequest" parameterType="java.util.Map">
+   SELECT stu_name stuName,stu_card_num stuCardNum,s_semester sSemester,stu.stu_parent_phone parentPhone,
+    SUM(IF(`s_sub_code`='001',s_score,0)) AS chinese,
+    SUM(IF(`s_sub_code`='002',s_score,0)) AS math,
+    SUM(IF(`s_sub_code`='003',s_score,0)) AS english,
+    SUM(IF(`s_sub_code`='004',s_score,0)) AS physics,
+    SUM(IF(`s_sub_code`='005',s_score,0)) AS chemistry,
+    SUM(IF(`s_sub_code`='006',s_score,0)) AS biology,
+    SUM(IF(`s_sub_code`='007',s_score,0)) AS geography,
+    SUM(IF(`s_sub_code`='008',s_score,0)) AS history,
+    SUM(IF(`s_sub_code`='009',s_score,0)) AS politics,
+    (SELECT SUM(s_score) FROM t_score tt WHERE tt.s_stu_id=stu.stu_id) totalScore,
+    (SELECT SUM(s_score) FROM t_score tt WHERE tt.s_stu_id=stu.stu_id)/9 average,
+    @rownum := @rownum + 1 AS ranking
+    FROM (SELECT @rownum := 0) r, t_score ts
+    LEFT JOIN t_student stu ON stu.stu_id=ts.s_stu_id
+    WHERE stu.stu_id IN
+    <foreach collection="list" open="(" close=")" separator="," index="index" item="item">
+      #{item.stuId, jdbcType=VARCHAR}
+    </foreach>
+    and ts.s_exam_id=#{sExamId}
+    GROUP BY s_stu_id
+    ORDER BY TotalScore DESC
+  </select>
+  <!--单科成绩-->
+  <select id="scorelist" resultType="com.wmk.porject.request.ScoreReq" parameterType="com.wmk.porject.request.ScoreReq">
+    SELECT @rownum:=@rownum+1 AS rownum,IF(@sScore=sScore,@rank,@rank:=@rownum)AS rank,@sScore:=sScore,t.* FROM
+    (SELECT ts.rec_id recId,stu.stu_card_num stuCardNum,stu.stu_uname stuUname,stu.stu_name stuName,
+    CONCAT(stu.stu_class,'班') stuClass,tsu.sub_name subName,IFNULL(ts.s_score,0) sScore,te.e_name eName
+    FROM t_student stu
+    LEFT JOIN t_score ts ON stu.stu_id=ts.s_stu_id
+    LEFT JOIN t_subject tsu ON tsu.sub_code=ts.s_sub_code
+    LEFT JOIN t_exam te ON te.e_id=ts.s_exam_id
+    WHERE 1=1
+    AND te.e_id=#{eId}
+    <if test="stuClass!=null and ''!=stuClass">
+      AND stu.stu_class=#{stuClass}
+    </if>
+    AND tsu.sub_code=#{subCode}
+    GROUP BY s_stu_id
+    ORDER BY ts.s_score+'' DESC)t,(SELECT @rank:=0,@rownum:=0,@sScore:=NULL)B
+  </select>
+  <!--全年级总成绩或班级总成绩-->
+  <select id="selectScorelist" resultType="com.wmk.porject.request.ScoreRequest" parameterType="java.lang.String">
+    SELECT @rownum:=@rownum+1 AS rownum,IF(@totalScore=totalScore,@rank,@rank:=@rownum)AS ranking,@totalScore:=totalScore,t.* FROM
+    (SELECT stu_name stuName,stu_card_num stuCardNum,s_semester sSemester,stu.stu_parent_phone parentPhone,CONCAT(stu.stu_class,'班') stuClass,te.e_name eName,
+    SUM(IF(`s_sub_code`='001',s_score,0)) AS chinese,
+    SUM(IF(`s_sub_code`='002',s_score,0)) AS math,
+    SUM(IF(`s_sub_code`='003',s_score,0)) AS english,
+    SUM(IF(`s_sub_code`='004',s_score,0)) AS physics,
+    SUM(IF(`s_sub_code`='005',s_score,0)) AS chemistry,
+    SUM(IF(`s_sub_code`='006',s_score,0)) AS biology,
+    SUM(IF(`s_sub_code`='007',s_score,0)) AS geography,
+    SUM(IF(`s_sub_code`='008',s_score,0)) AS history,
+    SUM(IF(`s_sub_code`='009',s_score,0)) AS politics,
+    (SELECT SUM(s_score) FROM t_score tt WHERE tt.s_stu_id=stu.stu_id) totalScore,
+    (SELECT SUM(s_score) FROM t_score tt WHERE tt.s_stu_id=stu.stu_id)/9 average
+    FROM  t_score ts
+    LEFT JOIN t_student stu ON stu.stu_id=ts.s_stu_id
+    LEFT JOIN t_exam te ON te.e_id=ts.s_exam_id
+    WHERE 1=1
+    AND ts.s_exam_id=#{sExamId}
+    <if test="stuClass!=null and ''!=stuClass">
+      AND stu.stu_class=#{stuClass}
+    </if>
+    GROUP BY s_stu_id
+    ORDER BY totalScore DESC)t,(SELECT @rank:=0,@rownum:=0,@totalScore:=NULL)B
+  </select>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.subsidyresult.SubsidyResultMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.SubsidyResult" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="ts_tsu_id" property="tsTsuId" jdbcType="VARCHAR" />
+    <result column="ts_stu_id" property="tsStuId" jdbcType="VARCHAR" />
+    <result column="ts_class" property="tsClass" jdbcType="VARCHAR" />
+    <result column="ts_stu_name" property="tsStuName" jdbcType="VARCHAR" />
+    <result column="ts_money" property="tsMoney" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ts_tsu_id, ts_stu_id, ts_class, ts_stu_name, ts_money
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_subsidy_result
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="subsidresultyList" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_subsidy_result
+    where ts_tsu_id = #{tsTsuId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_subsidy_result
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.SubsidyResult" >
+    insert into t_subsidy_result (id, ts_tsu_id, ts_stu_id, 
+      ts_class, ts_stu_name, ts_money
+      )
+    values (#{id,jdbcType=VARCHAR}, #{tsTsuId,jdbcType=VARCHAR}, #{tsStuId,jdbcType=VARCHAR}, 
+      #{tsClass,jdbcType=VARCHAR}, #{tsStuName,jdbcType=VARCHAR}, #{tsMoney,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.SubsidyResult" >
+    insert into t_subsidy_result
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tsTsuId != null" >
+        ts_tsu_id,
+      </if>
+      <if test="tsStuId != null" >
+        ts_stu_id,
+      </if>
+      <if test="tsClass != null" >
+        ts_class,
+      </if>
+      <if test="tsStuName != null" >
+        ts_stu_name,
+      </if>
+      <if test="tsMoney != null" >
+        ts_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="tsTsuId != null" >
+        #{tsTsuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tsStuId != null" >
+        #{tsStuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tsClass != null" >
+        #{tsClass,jdbcType=VARCHAR},
+      </if>
+      <if test="tsStuName != null" >
+        #{tsStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="tsMoney != null" >
+        #{tsMoney,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.SubsidyResult" >
+    update t_subsidy_result
+    <set >
+      <if test="tsTsuId != null" >
+        ts_tsu_id = #{tsTsuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tsStuId != null" >
+        ts_stu_id = #{tsStuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tsClass != null" >
+        ts_class = #{tsClass,jdbcType=VARCHAR},
+      </if>
+      <if test="tsStuName != null" >
+        ts_stu_name = #{tsStuName,jdbcType=VARCHAR},
+      </if>
+      <if test="tsMoney != null" >
+        ts_money = #{tsMoney,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.SubsidyResult" >
+    update t_subsidy_result
+    set ts_tsu_id = #{tsTsuId,jdbcType=VARCHAR},
+      ts_stu_id = #{tsStuId,jdbcType=VARCHAR},
+      ts_class = #{tsClass,jdbcType=VARCHAR},
+      ts_stu_name = #{tsStuName,jdbcType=VARCHAR},
+      ts_money = #{tsMoney,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

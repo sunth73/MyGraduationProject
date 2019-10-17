@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.classmapper.TClassMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.TClass" >
+    <id column="tc_id" property="tcId" jdbcType="VARCHAR" />
+    <result column="tc_class_num" property="tcClassNum" jdbcType="VARCHAR" />
+    <result column="tc_user_name" property="tcUserName" jdbcType="VARCHAR" />
+    <result column="tc_grade_num" property="tcGradeNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tc_id, tc_class_num, tc_user_name,tc_grade_num
+  </sql>
+  <select id="gradeList" resultType="com.wmk.porject.bean.TClass" parameterType="java.lang.String" >
+    select tc_grade_num tcGradeNum from t_class group by tc_grade_num
+  </select>
+  <select id="classList" resultType="com.wmk.porject.bean.TClass" parameterType="java.lang.String" >
+    SELECT tc.tc_id tcId,tc.tc_user_name tcUserName,tc.tc_class_num  tcClassNum,tc.tc_grade_num tcGradeNum,tt.tea_name teaName FROM
+    t_class tc
+    LEFT JOIN t_teacher tt ON tt.tea_login_name=tc.tc_user_name
+    where 1=1
+    <if test="tcGradeNum!=null and ''!=tcGradeNum">
+     and tc_grade_num=#{tcGradeNum}
+    </if>
+  </select>
+  <select id="selectGradeNum" resultType="com.wmk.porject.bean.TClass" parameterType="java.lang.String">
+    select tc_grade_num tcGradeNum from t_class where tc_class_num=#{tcClassNum}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_class
+    where tc_id = #{tcId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_class
+    where tc_id = #{tcId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.TClass" >
+    insert into t_class (tc_id, tc_class_num, tc_user_name
+      )
+    values (#{tcId,jdbcType=VARCHAR}, #{tcClassNum,jdbcType=VARCHAR}, #{tcUserName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.TClass" >
+    insert into t_class
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tcId != null" >
+        tc_id,
+      </if>
+      <if test="tcClassNum != null" >
+        tc_class_num,
+      </if>
+      <if test="tcUserName != null" >
+        tc_user_name,
+      </if>
+      <if test="tcGradeNum != null" >
+        tc_grade_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tcId != null" >
+        #{tcId,jdbcType=VARCHAR},
+      </if>
+      <if test="tcClassNum != null" >
+        #{tcClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="tcUserName != null" >
+        #{tcUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="tcGradeNum != null" >
+       #{tcGradeNum},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.TClass" >
+    update t_class
+    <set >
+      <if test="tcClassNum != null" >
+        tc_class_num = #{tcClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="tcUserName != null" >
+        tc_user_name = #{tcUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="tcGradeNum != null" >
+        #{tc_grade_num},
+      </if>
+    </set>
+    where tc_id = #{tcId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.TClass" >
+    update t_class
+    set tc_class_num = #{tcClassNum,jdbcType=VARCHAR},
+      tc_user_name = #{tcUserName,jdbcType=VARCHAR}
+    where tc_id = #{tcId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByUserName" parameterType="com.wmk.porject.bean.TClass" >
+    update t_class
+    set
+      tc_user_name = ''
+    where  tc_user_name = #{tcUserName,jdbcType=VARCHAR}
+  </update>
+</mapper>

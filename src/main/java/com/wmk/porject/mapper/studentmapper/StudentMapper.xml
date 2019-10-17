@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.studentmapper.StudentMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Student" >
+    <id column="stu_id" property="stuId" jdbcType="INTEGER" />
+    <result column="stu_card_num" property="stuCardNum" jdbcType="VARCHAR" />
+    <result column="stu_name" property="stuName" jdbcType="VARCHAR" />
+    <result column="stu_sex" property="stuSex" jdbcType="VARCHAR" />
+    <result column="stu_nation" property="stuNation" jdbcType="VARCHAR" />
+    <result column="stu_birthday" property="stuBirthday" jdbcType="TIMESTAMP" />
+    <result column="stu_place" property="stuPlace" jdbcType="VARCHAR" />
+    <result column="stu_goyear" property="stuGoyear" jdbcType="DATE" />
+    <result column="stu_address" property="stuAddress" jdbcType="VARCHAR" />
+    <result column="stu_class" property="stuClass" jdbcType="VARCHAR" />
+    <result column="stu_policital" property="stuPolicital" jdbcType="VARCHAR" />
+    <result column="stu_job" property="stuJob" jdbcType="VARCHAR" />
+    <result column="stu_dorm" property="stuDorm" jdbcType="VARCHAR" />
+    <result column="stu_phone" property="stuPhone" jdbcType="VARCHAR" />
+    <result column="stu_qq" property="stuQq" jdbcType="VARCHAR" />
+    <result column="stu_email" property="stuEmail" jdbcType="VARCHAR" />
+    <result column="stu_wchart" property="stuWchart" jdbcType="VARCHAR" />
+    <result column="stu_parent" property="stuParent" jdbcType="VARCHAR" />
+    <result column="stu_parent_phone" property="stuParentPhone" jdbcType="VARCHAR" />
+    <result column="stu_other" property="stuOther" jdbcType="VARCHAR" />
+    <result column="stu_photo_url" property="stuPhotoUrl" jdbcType="VARCHAR" />
+    <result column="stu_uname" property="stuUname" jdbcType="VARCHAR" />
+    <result column="stu_people_card" property="stuPeopleCard" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    stu_id, stu_card_num, stu_name, stu_sex, stu_nation, stu_birthday, stu_place, stu_goyear,
+    stu_address, stu_class, stu_policital, stu_job, stu_dorm, stu_phone, stu_qq, stu_email, 
+    stu_wchart, stu_parent, stu_parent_phone, stu_other, stu_photo_url,stu_people_card
+  </sql>
+  <!--学生列表-->
+  <select id="stuList" resultType="com.wmk.porject.bean.Student" parameterType="com.wmk.porject.bean.Student">
+    select
+    stu_id stuId, stu_card_num stuCardNum, stu_name stuName,
+    case stu_sex  when stu_sex='1' then '男' when stu_sex='2' then '女' else '错误' end stuSex, stu_nation stuNation, stu_birthday stuBirthday,
+     stu_place stuPlace, stu_goyear stuGoyear,stu_people_card stuPeopleCard,
+    stu_address stuAddress, stu_class stuClass, stu_policital stuPolicital, stu_job stuJob, stu_dorm stuDorm,
+    stu_phone stuPhone, stu_qq stuQq, stu_email stuEmail,
+    stu_wchart stuWchart, stu_parent stuParent, stu_parent_phone stuParentPhone, stu_other stuOther, stu_photo_url stuPhotoUrl,
+    stu_uname stuUname
+    from t_student
+    where 1=1
+    <if test="stuName != null and ''!=stuName">
+      and stu_name like CONCAT('%',#{stuName,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
+  <select id="studentListByGrade" resultType="com.wmk.porject.bean.Student" parameterType="java.lang.String">
+    SELECT stu_id stuId, stu_card_num stuCardNum, stu_name stuName,
+    case stu_sex  when stu_sex='1' then '男' when stu_sex='2' then '女' else '错误' end stuSex, stu_nation stuNation, stu_birthday stuBirthday,
+     stu_place stuPlace, stu_goyear stuGoyear,
+    stu_address stuAddress, stu_class stuClass, stu_policital stuPolicital, stu_job stuJob, stu_dorm stuDorm,
+    stu_phone stuPhone, stu_qq stuQq, stu_email stuEmail,
+    stu_wchart stuWchart, stu_parent stuParent, stu_parent_phone stuParentPhone, stu_other stuOther, stu_photo_url stuPhotoUrl,
+     stu_people_card stuPeopleCard,stu_uname stuUname
+     FROM t_student stu
+    INNER JOIN t_class tc ON tc.tc_class_num=stu.stu_class
+    AND tc.tc_grade_num=#{gradeNum}
+  </select>
+  <select id="selectByPrimaryKey" resultType="com.wmk.porject.bean.Student" parameterType="java.lang.String" >
+    select
+    stu_id stuId, stu_card_num stuCardNum, stu_name stuName,
+    case stu_sex  when stu_sex='1' then '男' when stu_sex='2' then '女' else '错误' end stuSex, stu_nation stuNation, stu_birthday stuBirthday,
+     stu_place stuPlace, stu_goyear stuGoyear,stu_people_card stuPeopleCard,
+    stu_address stuAddress, stu_class stuClass, stu_policital stuPolicital, stu_job stuJob, stu_dorm stuDorm,
+    stu_phone stuPhone, stu_qq stuQq, stu_email stuEmail,
+    stu_wchart stuWchart, stu_parent stuParent, stu_parent_phone stuParentPhone, stu_other stuOther, stu_photo_url stuPhotoUrl,
+    stu_uname stuUname
+    from t_student
+    where stu_id = #{stuId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByUserId" resultType="com.wmk.porject.bean.Student" parameterType="java.lang.Integer" >
+    select
+    stu_id stuId, stu_card_num stuCardNum, stu_name stuName,
+    case stu_sex  when stu_sex='1' then '男' when stu_sex='2' then '女' else '错误' end stuSex, stu_nation stuNation, stu_birthday stuBirthday,
+     stu_place stuPlace, stu_goyear stuGoyear,stu_people_card stuPeopleCard,
+    stu_address stuAddress, stu_class stuClass, stu_policital stuPolicital, stu_job stuJob, stu_dorm stuDorm,
+    stu_phone stuPhone, stu_qq stuQq, stu_email stuEmail,
+    stu_wchart stuWchart, stu_parent stuParent, stu_parent_phone stuParentPhone, stu_other stuOther, stu_photo_url stuPhotoUrl,
+    stu_uname stuUname
+    from t_student stu inner join t_user u on u.userName=stu.stu_uname
+    where u.userId = #{userid}
+  </select>
+  <select id="selectByStuUname" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_student
+    where stu_uname = #{stuUname,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByStuClass" resultType="java.lang.String" parameterType="java.lang.String" >
+    select
+    stu_id
+    from t_student
+    where stu_class = #{stuClass,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_student
+    where stu_id = #{stuId,jdbcType=VARCHAR};
+    delete from t_user
+    where userName = #{stuUname,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Student" >
+    insert into t_student (stu_id, stu_card_num, stu_name, 
+      stu_sex, stu_nation, stu_birthday, 
+      stu_place, stu_goyear, stu_address, 
+      stu_class, stu_policital, stu_job, 
+      stu_dorm, stu_phone, stu_qq,
+      stu_email, stu_wchart, stu_parent, 
+      stu_parent_phone, stu_other, stu_photo_url
+      )
+    values (#{stuId,jdbcType=VARCHAR}, #{stuCardNum,jdbcType=VARCHAR}, #{stuName,jdbcType=VARCHAR},
+      #{stuSex,jdbcType=VARCHAR}, #{stuNation,jdbcType=VARCHAR}, #{stuBirthday,jdbcType=TIMESTAMP}, 
+      #{stuPlace,jdbcType=VARCHAR}, #{stuGoyear,jdbcType=DATE}, #{stuAddress,jdbcType=VARCHAR}, 
+      #{stuClass,jdbcType=VARCHAR}, #{stuPolicital,jdbcType=VARCHAR}, #{stuJob,jdbcType=VARCHAR}, 
+      #{stuDorm,jdbcType=VARCHAR}, #{stuPhone,jdbcType=VARCHAR}, #{stuQq,jdbcType=VARCHAR}, 
+      #{stuEmail,jdbcType=VARCHAR}, #{stuWchart,jdbcType=VARCHAR}, #{stuParent,jdbcType=VARCHAR}, 
+      #{stuParentPhone,jdbcType=VARCHAR}, #{stuOther,jdbcType=VARCHAR}, #{stuPhotoUrl,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Student" >
+    insert into t_student
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        stu_id,
+      </if>
+      <if test="stuCardNum != null" >
+        stu_card_num,
+      </if>
+      <if test="stuName != null" >
+        stu_name,
+      </if>
+      <if test="stuSex != null" >
+        stu_sex,
+      </if>
+      <if test="stuNation != null" >
+        stu_nation,
+      </if>
+      <if test="stuBirthday != null" >
+        stu_birthday,
+      </if>
+      <if test="stuPlace != null" >
+        stu_place,
+      </if>
+      <if test="stuGoyear != null" >
+        stu_goyear,
+      </if>
+      <if test="stuAddress != null" >
+        stu_address,
+      </if>
+      <if test="stuClass != null" >
+        stu_class,
+      </if>
+      <if test="stuPolicital != null" >
+        stu_policital,
+      </if>
+      <if test="stuJob != null" >
+        stu_job,
+      </if>
+      <if test="stuDorm != null" >
+        stu_dorm,
+      </if>
+      <if test="stuPhone != null" >
+        stu_phone,
+      </if>
+      <if test="stuQq != null" >
+        stu_qq,
+      </if>
+      <if test="stuEmail != null" >
+        stu_email,
+      </if>
+      <if test="stuWchart != null" >
+        stu_wchart,
+      </if>
+      <if test="stuParent != null" >
+        stu_parent,
+      </if>
+      <if test="stuParentPhone != null" >
+        stu_parent_phone,
+      </if>
+      <if test="stuOther != null" >
+        stu_other,
+      </if>
+      <if test="stuPhotoUrl != null" >
+        stu_photo_url,
+      </if>
+      <if test="stuUname !=null">
+        stu_uname,
+      </if>
+      <if test="stuPeopleCard !=null">
+        stu_people_card,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="stuId != null" >
+        #{stuId,jdbcType=VARCHAR},
+      </if>
+      <if test="stuCardNum != null" >
+        #{stuCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="stuName != null" >
+        #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuSex != null" >
+        #{stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNation != null" >
+        #{stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="stuBirthday != null" >
+        #{stuBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stuPlace != null" >
+        #{stuPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="stuGoyear != null" >
+        #{stuGoyear,jdbcType=DATE},
+      </if>
+      <if test="stuAddress != null" >
+        #{stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="stuClass != null" >
+        #{stuClass,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPolicital != null" >
+        #{stuPolicital,jdbcType=VARCHAR},
+      </if>
+      <if test="stuJob != null" >
+        #{stuJob,jdbcType=VARCHAR},
+      </if>
+      <if test="stuDorm != null" >
+        #{stuDorm,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPhone != null" >
+        #{stuPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="stuQq != null" >
+        #{stuQq,jdbcType=VARCHAR},
+      </if>
+      <if test="stuEmail != null" >
+        #{stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="stuWchart != null" >
+        #{stuWchart,jdbcType=VARCHAR},
+      </if>
+      <if test="stuParent != null" >
+        #{stuParent,jdbcType=VARCHAR},
+      </if>
+      <if test="stuParentPhone != null" >
+        #{stuParentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="stuOther != null" >
+        #{stuOther,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPhotoUrl != null" >
+        #{stuPhotoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="stuUname != null">
+        #{stuUname,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPeopleCard != null">
+        #{stuPeopleCard,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Student" >
+    update t_student
+    <set >
+      <if test="stuCardNum != null" >
+        stu_card_num = #{stuCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="stuName != null" >
+        stu_name = #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuSex != null" >
+        stu_sex = #{stuSex,jdbcType=VARCHAR},
+      </if>
+      <if test="stuNation != null" >
+        stu_nation = #{stuNation,jdbcType=VARCHAR},
+      </if>
+      <if test="stuBirthday != null" >
+        stu_birthday = #{stuBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stuPlace != null" >
+        stu_place = #{stuPlace,jdbcType=VARCHAR},
+      </if>
+      <if test="stuGoyear != null" >
+        stu_goyear = #{stuGoyear,jdbcType=DATE},
+      </if>
+      <if test="stuAddress != null" >
+        stu_address = #{stuAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="stuClass != null" >
+        stu_class = #{stuClass,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPolicital != null" >
+        stu_policital = #{stuPolicital,jdbcType=VARCHAR},
+      </if>
+      <if test="stuJob != null" >
+        stu_job = #{stuJob,jdbcType=VARCHAR},
+      </if>
+      <if test="stuDorm != null" >
+        stu_dorm = #{stuDorm,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPhone != null" >
+        stu_phone = #{stuPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="stuQq != null" >
+        stu_qq = #{stuQq,jdbcType=VARCHAR},
+      </if>
+      <if test="stuEmail != null" >
+        stu_email = #{stuEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="stuWchart != null" >
+        stu_wchart = #{stuWchart,jdbcType=VARCHAR},
+      </if>
+      <if test="stuParent != null" >
+        stu_parent = #{stuParent,jdbcType=VARCHAR},
+      </if>
+      <if test="stuParentPhone != null" >
+        stu_parent_phone = #{stuParentPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="stuOther != null" >
+        stu_other = #{stuOther,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPhotoUrl != null" >
+        stu_photo_url = #{stuPhotoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="stuPeopleCard != null" >
+        stu_people_card = #{stuPeopleCard,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where stu_id = #{stuId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Student" >
+    update t_student
+    set stu_card_num = #{stuCardNum,jdbcType=VARCHAR},
+      stu_name = #{stuName,jdbcType=VARCHAR},
+      stu_sex = #{stuSex,jdbcType=VARCHAR},
+      stu_nation = #{stuNation,jdbcType=VARCHAR},
+      stu_birthday = #{stuBirthday,jdbcType=TIMESTAMP},
+      stu_place = #{stuPlace,jdbcType=VARCHAR},
+      stu_goyear = #{stuGoyear,jdbcType=DATE},
+      stu_address = #{stuAddress,jdbcType=VARCHAR},
+      stu_class = #{stuClass,jdbcType=VARCHAR},
+      stu_policital = #{stuPolicital,jdbcType=VARCHAR},
+      stu_job = #{stuJob,jdbcType=VARCHAR},
+      stu_dorm = #{stuDorm,jdbcType=VARCHAR},
+      stu_phone = #{stuPhone,jdbcType=VARCHAR},
+      stu_qq = #{stuQq,jdbcType=VARCHAR},
+      stu_email = #{stuEmail,jdbcType=VARCHAR},
+      stu_wchart = #{stuWchart,jdbcType=VARCHAR},
+      stu_parent = #{stuParent,jdbcType=VARCHAR},
+      stu_parent_phone = #{stuParentPhone,jdbcType=VARCHAR},
+      stu_other = #{stuOther,jdbcType=VARCHAR},
+      stu_photo_url = #{stuPhotoUrl,jdbcType=VARCHAR}
+    where stu_id = #{stuId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.dormmapper.DormMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Dorm" >
+    <id column="dorm_id" property="dormId" jdbcType="VARCHAR" />
+    <result column="dorm_num" property="dormNum" jdbcType="VARCHAR" />
+    <result column="dorm_class_num" property="dormClassNum" jdbcType="VARCHAR" />
+    <result column="dorm_user_id" property="dormUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    dorm_id, dorm_num, dorm_class_num, dorm_user_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_dorm
+    where dorm_id = #{dormId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_dorm
+    where dorm_id = #{dormId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Dorm" >
+    insert into t_dorm (dorm_id, dorm_num, dorm_class_num, 
+      dorm_user_id)
+    values (#{dormId,jdbcType=VARCHAR}, #{dormNum,jdbcType=VARCHAR}, #{dormClassNum,jdbcType=VARCHAR}, 
+      #{dormUserId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Dorm" >
+    insert into t_dorm
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dormId != null" >
+        dorm_id,
+      </if>
+      <if test="dormNum != null" >
+        dorm_num,
+      </if>
+      <if test="dormClassNum != null" >
+        dorm_class_num,
+      </if>
+      <if test="dormUserId != null" >
+        dorm_user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dormId != null" >
+        #{dormId,jdbcType=VARCHAR},
+      </if>
+      <if test="dormNum != null" >
+        #{dormNum,jdbcType=VARCHAR},
+      </if>
+      <if test="dormClassNum != null" >
+        #{dormClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="dormUserId != null" >
+        #{dormUserId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Dorm" >
+    update t_dorm
+    <set >
+      <if test="dormNum != null" >
+        dorm_num = #{dormNum,jdbcType=VARCHAR},
+      </if>
+      <if test="dormClassNum != null" >
+        dorm_class_num = #{dormClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="dormUserId != null" >
+        dorm_user_id = #{dormUserId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where dorm_id = #{dormId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Dorm" >
+    update t_dorm
+    set dorm_num = #{dormNum,jdbcType=VARCHAR},
+      dorm_class_num = #{dormClassNum,jdbcType=VARCHAR},
+      dorm_user_id = #{dormUserId,jdbcType=VARCHAR}
+    where dorm_id = #{dormId,jdbcType=VARCHAR}
+  </update>
+  <!--宿舍管理员查询-->
+  <select id="selectDormByAdmin" resultType="com.wmk.porject.request.DormScoreRequest" parameterType="com.wmk.porject.request.DormScoreRequest">
+    select td.dorm_id dormId, td.dorm_num dormNum, td.dorm_class_num dormClassNum, td.dorm_user_id dormUserId,
+    tds.tds_id tdsId, tds.tds_dorm_id tdsDormId, tds.tds_date tdsDate, tds.tds_grade tdsGrade, tds.tds_evaluate tdsEvaluate,
+    (SELECT u.rowNo FROM (
+    SELECT t.dorm_num,t.dorm_id,ta.tds_dorm_id,(@rowNum:=@rowNum+1) AS rowNo
+    FROM t_dorm t,t_dorm_score ta,
+    (SELECT (@rowNum :=0) ) b
+    WHERE t.dorm_id =ta.tds_dorm_id
+    ORDER BY ta.tds_grade DESC) u WHERE  u.dorm_num=td.dorm_num)ranking
+    from t_dorm td
+    left join t_dorm_score tds
+    on td.dorm_id=tds.tds_id
+    where td.dorm_user_id=#{currentUser}
+    <if test="maxDate !=null">
+      and tds.tds_date <![CDATA[<= ]]>#{maxDate}
+    </if>
+    <if test="minDate !=null">
+      and tds.tds_date <![CDATA[>= ]]>#{minDate}
+    </if>
+    <if test="dormClassNum != null">
+     and td.dorm_class_num=#{dormClassNum}
+    </if>
+    <if test="dormNum != null">
+      and td.dorm_num=#{dormNum}
+    </if>
+  </select>
+  <!--班主任查询-->
+  <select id="selectDormByTeacher" resultType="com.wmk.porject.request.DormScoreRequest" parameterType="com.wmk.porject.request.DormScoreRequest">
+    select td.dorm_id dormId, td.dorm_num dormNum, td.dorm_class_num dormClassNum, td.dorm_user_id dormUserId,
+    tds.tds_id tdsId, tds.tds_dorm_id tdsDormId, tds.tds_date tdsDate, tds.tds_grade tdsGrade, tds.tds_evaluate tdsEvaluate,
+    (SELECT u.rowNo FROM (
+    SELECT t.dorm_num,t.dorm_id,ta.tds_dorm_id,(@rowNum:=@rowNum+1) AS rowNo
+    FROM t_dorm t,t_dorm_score ta,
+    (SELECT (@rowNum :=0) ) b
+    WHERE t.dorm_id =ta.tds_dorm_id
+    ORDER BY ta.tds_grade DESC) u WHERE  u.dorm_num=td.dorm_num)ranking
+    from t_dorm td
+    left join t_dorm_score tds
+    on td.dorm_id=tds.tds_dorm_id
+    where  td.dorm_class_num=#{dormClassNum}
+    <if test="maxDate !=null">
+     and tds.tds_date <![CDATA[<= ]]>#{maxDate}
+    </if>
+    <if test="minDate !=null">
+      and tds.tds_date <![CDATA[>= ]]>#{minDate}
+    </if>
+    <if test="dormNum != null">
+      and td.dorm_num=#{dormNum}
+    </if>
+  </select>
+  <!--学生查询-->
+  <select id="selectDormByStudent" resultType="com.wmk.porject.request.DormScoreRequest" parameterType="com.wmk.porject.request.DormScoreRequest">
+    select td.dorm_id dormId, td.dorm_num dormNum, td.dorm_class_num dormClassNum, td.dorm_user_id dormUserId,
+    tds.tds_id tdsId, tds.tds_dorm_id tdsDormId, tds.tds_date tdsDate, tds.tds_grade tdsGrade, tds.tds_evaluate tdsEvaluate,
+    (SELECT u.rowNo FROM (
+    SELECT t.dorm_num,t.dorm_id,ta.tds_dorm_id,(@rowNum:=@rowNum+1) AS rowNo
+    FROM t_dorm t,t_dorm_score ta,
+    (SELECT (@rowNum :=0) ) b
+    WHERE t.dorm_id =ta.tds_dorm_id
+    ORDER BY ta.tds_grade DESC) u WHERE  u.dorm_num=td.dorm_num)ranking
+    from t_dorm td
+    left join t_dorm_score tds
+    on td.dorm_id=tds.tds_dorm_id
+    where  td.dorm_num=#{dormNum}
+    <if test="maxDate !=null">
+      and tds.tds_date <![CDATA[<= ]]>#{maxDate}
+    </if>
+    <if test="minDate !=null">
+      and tds.tds_date <![CDATA[>= ]]>#{minDate}
+    </if>
+  </select>
+  <select id="selectScore" resultType="com.wmk.porject.request.DormScoreRequest" parameterType="java.lang.String">
+    select td.dorm_id dormId, td.dorm_num dormNum, td.dorm_class_num dormClassNum, td.dorm_user_id dormUserId,
+    tds.tds_id tdsId, tds.tds_dorm_id tdsDormId, tds.tds_date tdsDate, tds.tds_grade tdsGrade, tds.tds_evaluate tdsEvaluate
+    from t_dorm td
+    left join t_dorm_score tds
+    on td.dorm_id=tds.tds_dorm_id
+    where tds.tds_id=#{tdsId}
+  </select>
+  <select id="dromList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_dorm
+  </select>
+  <select id="dromList2" resultType="com.wmk.porject.bean.Dorm">
+    SELECT d.dorm_id dormId, d.dorm_num dormNum,d.dorm_class_num dormClassNum,d.dorm_user_id dormUserId,t.empname dormUserName FROM t_dorm d
+    LEFT JOIN t_user t ON t.userId=d.dorm_user_id
+  </select>
+</mapper>

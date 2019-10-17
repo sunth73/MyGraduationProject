@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.attendancemapper.AttendanceMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Attendance" >
+    <id column="t_id" property="tId" jdbcType="VARCHAR" />
+    <result column="t_date" property="tDate" jdbcType="DATE" />
+    <result column="t_week" property="tWeek" jdbcType="VARCHAR" />
+    <result column="t_work_state" property="tWorkState" jdbcType="VARCHAR" />
+    <result column="t_state" property="tState" jdbcType="VARCHAR" />
+    <result column="t_cause" property="tCause" jdbcType="VARCHAR" />
+    <result column="t_leave" property="tLeave" jdbcType="VARCHAR" />
+    <result column="t_stu_id" property="tStuId" jdbcType="VARCHAR" />
+    <result column="t_sub_id" property="tSubId" jdbcType="VARCHAR" />
+    <result column="t_num" property="tNum" jdbcType="VARCHAR" />
+      <result column="t_class" property="tClass" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t_id, t_date, t_week, t_work_state, t_state, t_cause, t_leave, t_stu_id, t_sub_id, 
+    t_num
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_attendance
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_attendance
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Attendance" >
+    insert into t_attendance (t_id, t_date, t_week, 
+      t_work_state, t_state, t_cause, 
+      t_leave, t_stu_id, t_sub_id, 
+      t_num)
+    values (#{tId,jdbcType=VARCHAR}, #{tDate,jdbcType=DATE}, #{tWeek,jdbcType=VARCHAR}, 
+      #{tWorkState,jdbcType=VARCHAR}, #{tState,jdbcType=VARCHAR}, #{tCause,jdbcType=VARCHAR}, 
+      #{tLeave,jdbcType=VARCHAR}, #{tStuId,jdbcType=VARCHAR}, #{tSubId,jdbcType=VARCHAR}, 
+      #{tNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Attendance" >
+    insert into t_attendance
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tId != null" >
+        t_id,
+      </if>
+      <if test="tDate != null" >
+        t_date,
+      </if>
+      <if test="tWeek != null" >
+        t_week,
+      </if>
+      <if test="tWorkState != null" >
+        t_work_state,
+      </if>
+      <if test="tState != null" >
+        t_state,
+      </if>
+      <if test="tCause != null" >
+        t_cause,
+      </if>
+      <if test="tLeave != null" >
+        t_leave,
+      </if>
+      <if test="tStuId != null" >
+        t_stu_id,
+      </if>
+      <if test="tSubId != null" >
+        t_sub_id,
+      </if>
+      <if test="tNum != null" >
+        t_num,
+      </if>
+        <if test="tClass != null" >
+            t_class,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tId != null" >
+        #{tId,jdbcType=VARCHAR},
+      </if>
+      <if test="tDate != null" >
+        #{tDate,jdbcType=DATE},
+      </if>
+      <if test="tWeek != null" >
+        #{tWeek,jdbcType=VARCHAR},
+      </if>
+      <if test="tWorkState != null" >
+        #{tWorkState,jdbcType=VARCHAR},
+      </if>
+      <if test="tState != null" >
+        #{tState,jdbcType=VARCHAR},
+      </if>
+      <if test="tCause != null" >
+        #{tCause,jdbcType=VARCHAR},
+      </if>
+      <if test="tLeave != null" >
+        #{tLeave,jdbcType=VARCHAR},
+      </if>
+      <if test="tStuId != null" >
+        #{tStuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tSubId != null" >
+        #{tSubId,jdbcType=VARCHAR},
+      </if>
+      <if test="tNum != null" >
+        #{tNum,jdbcType=VARCHAR},
+      </if>
+        <if test="tClass != null" >
+            #{tClass,jdbcType=VARCHAR},
+        </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Attendance" >
+    update t_attendance
+    <set >
+      <if test="tDate != null" >
+        t_date = #{tDate,jdbcType=DATE},
+      </if>
+      <if test="tWeek != null" >
+        t_week = #{tWeek,jdbcType=VARCHAR},
+      </if>
+      <if test="tWorkState != null" >
+        t_work_state = #{tWorkState,jdbcType=VARCHAR},
+      </if>
+      <if test="tState != null" >
+        t_state = #{tState,jdbcType=VARCHAR},
+      </if>
+      <if test="tCause != null" >
+        t_cause = #{tCause,jdbcType=VARCHAR},
+      </if>
+      <if test="tLeave != null" >
+        t_leave = #{tLeave,jdbcType=VARCHAR},
+      </if>
+      <if test="tStuId != null" >
+        t_stu_id = #{tStuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tSubId != null" >
+        t_sub_id = #{tSubId,jdbcType=VARCHAR},
+      </if>
+      <if test="tNum != null" >
+        t_num = #{tNum,jdbcType=VARCHAR},
+      </if>
+        <if test="tClass != null" >
+           t_class= #{tClass,jdbcType=VARCHAR},
+        </if>
+    </set>
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Attendance" >
+    update t_attendance
+    set t_date = #{tDate,jdbcType=DATE},
+      t_week = #{tWeek,jdbcType=VARCHAR},
+      t_work_state = #{tWorkState,jdbcType=VARCHAR},
+      t_state = #{tState,jdbcType=VARCHAR},
+      t_cause = #{tCause,jdbcType=VARCHAR},
+      t_leave = #{tLeave,jdbcType=VARCHAR},
+      t_stu_id = #{tStuId,jdbcType=VARCHAR},
+      t_sub_id = #{tSubId,jdbcType=VARCHAR},
+      t_num = #{tNum,jdbcType=VARCHAR}
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </update>
+    <select id="attlist" resultType="com.wmk.porject.request.AttendanceResponse" parameterType="com.wmk.porject.bean.Attendance" >
+        select
+        ta.t_id tId, ta.t_date tDate, ta.t_week tWeek,
+        case ta.t_work_state when '0' then '出勤' when '1' then '缺勤' when '2' then '请假' else '未填写' end tWorkState,
+        case ta.t_state when '0' then '正常' when '1' then '迟到' when '2' then '早退' when '3' then '迟到并早退'else '未填写' end tState,
+         ta.t_cause tCause,
+         case ta.t_leave when '0' then '请假' when '1' then '未请假' else '未填写' end  tLeave,
+          ta.t_stu_id tStuId, ta.t_sub_id tSubId,
+    ta.t_num tNum,stu.stu_id stuId, stu.stu_card_num stuCardNum,  stu.stu_name stuName,stu.stu_class stuClass,ts.sub_name subName
+        from t_attendance ta
+        inner join t_student stu on stu.stu_id=ta.t_stu_id
+        inner join t_subject ts on ts.sub_code=ta.t_sub_id
+        where 1=1
+        and t_date = #{tDate,jdbcType=DATE}
+        and t_class=#{tClass}
+        and t_num = #{tNum,jdbcType=VARCHAR}
+    </select>
+    <select id="valiadlist" resultType="com.wmk.porject.request.AttendanceResponse" parameterType="com.wmk.porject.bean.Attendance" >
+        select
+         ta.t_sub_id tSubId,ts.sub_name subName
+        from t_attendance ta
+        inner join t_subject ts on ts.sub_code=ta.t_sub_id
+        where 1=1
+        and t_date = #{tDate,jdbcType=DATE}
+        and t_class=#{tClass}
+        and t_num = #{tNum,jdbcType=VARCHAR}
+    </select>
+    <update id="update" parameterType="com.wmk.porject.bean.Attendance" >
+    update t_attendance
+    set
+      t_sub_id = #{tSubId,jdbcType=VARCHAR}
+    where t_date = #{tDate,jdbcType=DATE} and t_class= #{tClass,jdbcType=VARCHAR} and  t_num = #{tNum,jdbcType=VARCHAR}
+  </update>
+  <select id="attContentForClass" resultType="com.wmk.porject.request.AttResp" parameterType="com.wmk.porject.bean.Attendance">
+    SELECT ta.t_stu_id stuId, COUNT((ta.t_work_state='1')  OR NULL) queQin,
+    COUNT(ta.t_state='1' OR NULL) chiDao,COUNT(ta.t_state='2' OR NULL) zaoTui,
+    COUNT(ta.t_state='3' OR NULL) chiDaoAndZaoTui,COUNT((ta.t_work_state='2')  OR NULL) qingJia,stu.stu_card_num stuCardNum,  stu.stu_name stuName,ta.t_class tClass
+    FROM t_attendance ta
+    INNER JOIN t_student stu ON stu.stu_id=ta.t_stu_id
+    WHERE t_class=#{tClass}
+    AND t_date=#{tDate}
+    GROUP BY t_stu_id
+  </select>
+  <select id="attlistforStu" resultType="com.wmk.porject.request.AttendanceResponse" parameterType="com.wmk.porject.bean.Attendance" >
+        select
+        ta.t_id tId, ta.t_date tDate, ta.t_week tWeek,
+        case ta.t_work_state when '0' then '出勤' when '1' then '缺勤' when '2' then '请假' else '未填写' end tWorkState,
+        case ta.t_state when '0' then '正常' when '1' then '迟到' when '2' then '早退' when '3' then '迟到并早退'else '未填写' end tState,
+         ta.t_cause tCause,
+         case ta.t_leave when '0' then '请假' when '1' then '未请假' else '未填写' end  tLeave,
+          ta.t_stu_id tStuId, ta.t_sub_id tSubId,
+    case ta.t_num when '1' then '第一节' when '2' then '第二节' when '3' then '第三节' when '4' then '第四节' when '5' then '第五节'
+     when '6' then '第六节' when '7' then '第七节' end tNum,
+    stu.stu_id stuId, stu.stu_card_num stuCardNum,  stu.stu_name stuName,stu.stu_class stuClass,ts.sub_name subName
+        from t_attendance ta
+        inner join t_student stu on stu.stu_id=ta.t_stu_id
+        inner join t_subject ts on ts.sub_code=ta.t_sub_id
+        where 1=1
+        AND stu.stu_id=#{tStuId}
+        and t_date = #{tDate,jdbcType=DATE}
+        and t_class=#{tClass}
+      order by t_num
+    </select>
+  <select id="selectForCountNum" resultType="com.wmk.porject.request.AttRespnse" parameterType="com.wmk.porject.bean.Attendance">
+    SELECT COUNT(1) stuNum,COUNT(ta.t_work_state='0' OR NULL) chuQinNum,
+    COUNT(ta.t_work_state='1' OR NULL) queQinNum,COUNT(ta.t_work_state='2' OR NULL) qingJiaNum,
+    COUNT(ta.t_state='1' OR NULL) chiDaoNum,COUNT(ta.t_state='2' OR NULL)zaoTuiNum,
+    COUNT(ta.t_state='3' OR NULL) chiDaoAndZaoTuiNum,ta.t_class tClass,
+    case ta.t_num when '1' then '第一节' when '2' then '第二节' when '3' then '第三节' when '4' then '第四节' when '5' then '第五节'
+    when '6' then '第六节' when '7' then '第七节' end  tNumNum
+    FROM t_attendance ta
+    INNER JOIN t_student stu ON stu.stu_id=ta.t_stu_id
+    WHERE t_class=#{tClass}
+    AND t_date= #{tDate,jdbcType=DATE}
+    <if test="tNum!=null and ''!=tNum">
+      AND t_num=#{tNum,jdbcType=VARCHAR}
+    </if>
+    <if test="tStuId!=null and ''!=tStuId">
+      and ta.t_stu_id=#{tStuId}
+    </if>
+  </select>
+</mapper>

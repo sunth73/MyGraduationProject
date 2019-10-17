@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>用户管理</title>
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/demo/demo.css">
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+	<!--<script type="text/javascript" src="../validate/validate.js"></script>-->
+<script type="text/javascript">
+	var flag="0";//判断模态框用途(添加/修改)
+	var resultNum="";
+	/*
+	* 初始化加载数据
+	* */
+	$(function(){
+	    var message={
+	        "empname":$("#empname").val(),
+            "roleid":$('#roleid').combobox('getValue')
+		}
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",message);
+        $('#dg').datagrid({
+            data: msg.body,
+            columns:[[
+                {checkbox: true},
+                {field:'username',title:'登录名',width:100,align:'center'},
+                {field:'empname',title:'姓名',width:100,align:'center'},
+                {field:'userphone',title:'手机号',width:100,align:'center'},
+                {field:'usermail',title:'邮箱',width:100,align:'center'},
+                {field:'rolename',title:'角色',width:100,align:'center'},
+                {field:'userdescription',title:'描述',width:100,align:'center'}
+            ]]
+        });
+        var message={}
+        var mess=jQuery.fn.commonPlugin.commonAjaxJson("/role/rolelist",message);
+        $('#roleid').combobox({
+            data: mess.body,
+            valueField:'roleid',
+            textField:'rolename'
+        });
+	});
+    function searchname() {
+        var mes={
+            "empname":$("#eName").val()
+        }
+        var mesg=jQuery.fn.commonPlugin.commonAjaxJson("/user/selectusername",mes);
+        console.log(mesg);
+        $("#uName").val(mesg.body);
+    }
+	/*条件搜索*/
+    function search () {
+        var message={
+            "empname":$("#empname").val(),
+            "roleid":$('#roleid').combobox('getValue')
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",message);
+        $('#dg').datagrid({
+            data: msg.body
+        });
+    };
+    /**
+	 * 添加--添加框
+     */
+    function openUserAddDialog() {
+        flag=1;
+        $('#dlg').dialog({
+
+            title: '添加用户',
+            width: 600,
+            height: 300,
+            closed: false,
+            cache: false,
+            modal: true,
+            onOpen:function () {
+                var message={}
+                var msg=jQuery.fn.commonPlugin.commonAjaxJson("/role/rolelist",message);
+                $("#eName").removeAttr('readOnly','true');
+                $('#rid').combogrid({
+                    panelWidth:250,
+                    // value:rolename,
+                    idField:'roleid',
+                    textField:'rolename',
+                    data:msg.body,
+                    multiple: true,
+                    columns:[[
+                        {field:'rolename',title:'角色名称',width:100,align:'center'},
+                        {field:'roledescription',title:'描述',width:100,align:'center'},
+                        {field:'roleid',hidden:true}
+                    ]]
+                });
+            },
+			/*
+			* 新增后刷新页面
+			* */
+			onClose:function () {
+                if(resultNum=="0"){
+                	 $.messager.alert('info','用户添加成功');
+				}else if(resultNum=="1"){
+                    $.messager.alert('warn','用户添加失败');
+                }
+                resultNum="";
+				flag="0";
+                $("#dlg").form('clear');//关闭是清空form表单数据
+                var mess={
+                    "empname":$("#empname").val(),
+                    "roleid":$('#roleid').combobox('getValue')
+                }
+                var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",mess);
+                $('#dg').datagrid({
+                    data: msg1.body
+                });
+            }
+        });
+    };
+
+    /*
+    * 修改
+    * */
+    function openUserModifyDialog() {
+        flag="2";
+        var rows = $('#dg').datagrid('getSelections');
+        if(rows==undefined || rows.length != 1){
+            $.messager.alert('info','请选择要修改的一条数据');
+            return false;
+		}
+        $('#dlg').dialog({
+            title: '修改用户',
+            width: 600,
+            height: 300,
+            closed: false,
+            cache: false,
+            modal: true,
+            onOpen:function () {
+                var message={}
+                var msg=jQuery.fn.commonPlugin.commonAjaxJson("/role/rolelist",message);
+                $('#rid').combogrid({
+                    panelWidth:250,
+                    value:rows[0].roleid,
+                    idField:'roleid',
+                    textField:'rolename',
+                    multiple: true,
+                    data:msg.body,
+                    columns:[[
+                        {field:'rolename',title:'角色名称',width:100,align:'center'},
+                        {field:'roledescription',title:'描述',width:100,align:'center'},
+                        {field:'roleid',hidden:true}
+                    ]]
+                });
+                $("#uId").val(rows[0].userid);
+                $("#uName").val(rows[0].username);
+                $("#eName").attr('readOnly','true');
+                $("#eName").val(rows[0].empname);
+                $("#uPhone").val(rows[0].userphone);
+                $("#uEmail").val(rows[0].usermail);
+                // $("input[name='uType'][value=rows[0].usertype]").attr("checked",true);
+                $("input[name='uType']").val(value=rows[0].usertype).attr("checked", true);
+                $("#uDescription").val(rows[0].userdescription);
+            },
+            /*
+            * 修改后后刷新页面
+            * */
+            onClose:function () {
+                if(resultNum=="0"){
+                    $.messager.alert('info','用户修改成功');
+                }else if(resultNum=="1"){
+                    $.messager.alert('warn','用户修改失败');
+				}
+                resultNum="";
+                flag="0";
+                $("#dlg").form('clear');//关闭是清空form表单数据
+                var mess={
+                    "empname":$("#empname").val(),
+                    "roleid":$('#roleid').combobox('getValue')
+                }
+                var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",mess);
+                $('#dg').datagrid({
+                    data: msg1.body
+                });
+            }
+        });
+    }
+    /**
+     * 添加用户/修改用户数据
+     */
+    function saveUser() {
+        debugger;
+        $('#uName').validatebox({
+            required: true,
+            missingMessage:"用户名不能为空"
+            /*validType: 'sql',
+            invalidMessage:"用户名已存在"*/
+        });
+        $('#eName').validatebox({
+            required: true,
+            missingMessage:"姓名不能为空",
+        });
+        $('#uPhone').validatebox({
+            required: true,
+            missingMessage:"手机号不能为空"
+            // validType: 'phone',
+            // invalidMessage:"请输入11位数字"
+        });
+        $("#uEmail").validatebox({
+            required: true,
+            missingMessage: "请输入邮箱",
+            validType: 'email',
+            invalidMessage:"格式不对"
+        });
+        if(!$("#dlg").form('validate')){
+            return false;
+        }
+        var str="";
+        var roleIds=$('#rid').combogrid('getValues');
+        for ( var i =  roleIds.length- 1; i >= 0 ; i-- ) {
+            str += roleIds[i] + ",";
+        }
+        var message={
+            "username":$("#uName").val(),
+            "empname":$("#eName").val(),
+            "userphone":$("#uPhone").val(),
+            "usermail":$("#uEmail").val(),
+            "usertype":$('input:radio:checked').val(),
+            "roleIds":str,
+            "userdescription":$("#uDescription").val(),
+			"userid":$("#uId").val()
+        }
+        if(flag=="1"){
+            var msg=jQuery.fn.commonPlugin.commonAjaxJson("/user/adduser",message);
+            resultNum=msg.header.resultCode;
+        }else if(flag=="2"){
+            var msg1=jQuery.fn.commonPlugin.commonAjaxJson("/user/updateuser",message);
+            console.log(msg1);
+            resultNum=msg1.header.resultCode;
+        }
+        $('#dlg').dialog("close");
+    }
+
+    /**
+     * 关闭新增/修改页面窗口
+     */
+    function closeUserAddDialog() {
+        $('#dlg').dialog("close");
+
+    }
+
+    /**
+	 * 删除相关
+     */
+    function deleteUser() {
+        var rows = $('#dg').datagrid('getSelections');
+        if(rows.length<1){
+            $.messager.alert('系统提示','请选择要删除的数据');
+            return false;
+        }else{
+            $.messager.confirm('系统提示', '确定删除'+rows.length+'条数据？', function(r){
+                if (r){
+                    var msg=jQuery.fn.commonPlugin.commonAjaxJson("/user/deleteuser",rows);
+                    if(msg!= undefined && msg.header.resultCode=="0"){
+                        $.messager.alert('info','删除成功');
+                        /*
+                        * 刷新页面
+                        * */
+                        var mess={
+                            "empname":$("#empname").val(),
+                            "roleid":$('#roleid').combobox('getValue')
+                        }
+                        var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/user/userlist",mess);
+                        $('#dg').datagrid({
+                            data: msg1.body
+                        });
+					}else {
+                        $.messager.alert('info','删除失败');
+					}
+
+                }
+            });
+		}
+    }
+    /*上传用户*/
+    function uploadUser() {
+        $('#dd').dialog({
+            title: 'My Dialog',
+            width: 400,
+            height: 500,
+            closed: false,
+            cache: false,
+            href: 'kcsz.html',
+            modal: true
+        });
+
+    }
+
+</script>
+</head>
+<body style="margin: 1px;">
+<!--用户列表-->
+<table id="dg" title="用户管理" class="easyui-datagrid" fitColumns="true" pagination="true" rownumbers="true" fit="true" toolbar="#tb">
+</table>
+<!--功能按钮-->
+<div id="tb">
+	<div>
+		<a href="javascript:openUserAddDialog()" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加</a>
+		<a href="javascript:openUserModifyDialog()" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+		<a href="javascript:deleteUser()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+		<a href="javascript:uploadUser()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">用户上传</a>
+	</div>
+	<div>
+		&nbsp;用户名：&nbsp;<input type="text" name="empname" id="empname" size="20" onkeydown="if(event.keyCode==13) searchUser()"/>
+		&nbsp;用户角色：&nbsp;<input class="easyui-combobox" id="roleid" name="roleid" size="20" />
+		<button class="easyui-linkbutton" iconCls="icon-search" plain="true" id="search" onclick="search()">搜索</button>
+	</div>
+</div>
+<!--添加修改弹框-->
+<div id="dlg" class="easyui-dialog" style="width: 570px;height: 350px;padding: 10px 20px"
+  closed="true" buttons="#dlg-buttons">
+	<form id="form">
+  	<table cellspacing="5px;">
+  		<tr>
+  			<td>用户名：</td>
+  			<td><input type="text" id="eName" name="eName" onblur="searchname()" class="easyui-validatebox" />
+				<input type="hidden" id="uId"/>
+			</td>
+  			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  			<td>登录名：</td>
+  			<td><input type="text" id="uName" name="uName" class="easyui-validatebox" readonly="readonly"/></td>
+  		</tr>
+		<tr>
+			<td>手机号：</td>
+			<td><input type="number" id="uPhone" name="uPhone" class="easyui-validatebox" onblur="validaterepeat('t_user','userPhone',$(this).val(),'userId',$('uId').val())"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>邮箱：</td>
+			<td><input type="text" id="uEmail" name="uEmail" class="easyui-validatebox" onblur="validaterepeat('t_user','userMail',$(this).val(),'userId',$('uId').val())"/></td>
+		</tr>
+  		<tr>
+  			<td>是否启用：</td>
+  			<td>启用<input type="radio" name="uType"  value="2" checked="checked">
+				禁用<input type="radio" name="uType"  value="1" ></td>
+  			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>选择角色：</td>
+  			<td><input id="rid"/></td>
+  		</tr>
+  		<tr>
+  			<td valign="top">备注：</td>
+  			<td colspan="4">
+  				<textarea rows="7" cols="50" name="uDescription" id="uDescription"></textarea>
+  			</td>
+  		</tr>
+  	</table>
+	</form>
+</div>
+
+<div id="dlg-buttons">
+	<a href="javascript:saveUser()" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:closeUserAddDialog()" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+<div id="dd">Dialog Content.</div>
+</body>
+</html>

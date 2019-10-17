@@ -1,0 +1,341 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>系统主界面</title>
+	<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/student.css">
+	<link href="../style/StudentStyle.css" rel="stylesheet" type="text/css" />
+	<link href="../Script/jBox/Skins/Blue/jbox.css" rel="stylesheet" type="text/css" />
+	<link href="../style/ks.css" rel="stylesheet" type="text/css" />
+	<script src="../js/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+	<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+	<script type="text/javascript" src="../utiljs/dateUtil.js"></script>
+	<style type="text/css">
+		.span{
+			width: 80px;
+		}
+	</style>
+	<script type="text/javascript">
+		$(function () {
+		    $("#dlg-button").hide();
+		    $("#dd").hide();
+		    debugger;
+            $("#error").hide();
+            currentUser = JSON.parse(sessionStorage.getItem("loginUser"));
+			// if(currentUser.roleid==9){
+            if(currentUser.roleIds.indexOf("9")!=-1) {
+                $(".cztable").hide();
+                $("#stu").show();
+                var message = {
+                    "userid": currentUser.userid
+                }
+                var msg = jQuery.fn.commonPlugin.commonAjaxJson("/stu/selectByUserId", message);
+                var path = "http://"+location.host+"/file/showImage?imageSrc="+msg.body.stuPhotoUrl;
+                $("#photo").attr("src",path);
+                $("#stuCardNum").html(msg.body.stuCardNum);
+                $("#stuName").html(msg.body.stuName);
+                $("#stuSex").html(msg.body.stuSex);
+                $("#stuNation").html(msg.body.stuNation);
+                $("#stuBirthday").html(timestampToTime(msg.body.stuBirthday));
+                $("#stuPlace").html(msg.body.stuPlace);
+                $("#stuGoyear").html(timestampToTime(msg.body.stuGoyear));
+                $("#stuAddress").html(msg.body.stuAddress);
+                $("#stuClass").html(msg.body.stuClass);
+                $("#stuPolicital").html(msg.body.stuPolicital);
+                $("#stuJob").html(msg.body.stuJob);
+                $("#stuDorm").html(msg.body.stuDorm);
+                $("#stuPhone").html(msg.body.stuPhone);
+                $("#stuQq").html(msg.body.stuQq);
+                $("#stuEmail").html(msg.body.stuEmail);
+                $("#stuWchart").html(msg.body.stuWchart);
+                $("#stuParent").html(msg.body.stuParent);
+                $("#stuParentPhone").html(msg.body.stuParentPhone);
+                $("#stuPeopleCard").html(msg.body.stuPeopleCard);
+
+                // }else if(currentUser.roleid==4){
+            }else if(currentUser.roleIds.indexOf("4")!=-1){
+                $(".cztable").hide();
+                $("#tea").show();
+                var message1={
+                    "userid":currentUser.userid
+                }
+                var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/tea/selectByUserId",message1);
+                var mes={
+                    "tcClassNum":msg1.body.teaCalss
+                }
+                var mesg=jQuery.fn.commonPlugin.commonAjaxJson("/tclass/selectGradeNum",mes);
+                var path = "http://"+location.host+"/file/showImage?imageSrc="+msg1.body.teaPhoteUrl;
+                $("#photo2").attr("src",path);
+                $("#teaName").html(msg1.body.teaName);
+                $("#teaCalss").html(msg1.body.teaCalss);
+                $("#teaCardNum").html(msg1.body.teaCardNum);
+                $("#teaSex").html(msg1.body.teaSex);
+                $("#teaSubject").html(msg1.body.teaSubject);
+                $("#teaPolicital").html(msg1.body.teaPolicital);
+                $("#teaPhone").html(msg1.body.teaPhone);
+                $("#teaQq").html(msg1.body.teaQq);
+                $("#teaWchart").html(msg1.body.teaWchart);
+                $("#teaUniversity").html(msg1.body.teaUniversity);
+                $("#teaEducation").html(msg1.body.teaEducation);
+                $("#teaAddress").html(msg1.body.teaAddress);
+                $("#teaMail").html(msg1.body.teaMail);
+                $("#teaPeopleCard").html(msg1.body.teaPeopleCard);
+                $("#teaGrade").html(mesg.body[0].tcGradeNum);
+			}else {
+                $(".cztable").hide();
+                $("#error").show();
+                $("#info").html("无权操作，请联系管理员");
+			}
+        })
+		function submitMail() {
+            $("#dlg-button").show();
+            $("#dd").show();
+            $('#dd').dialog({
+                title: '上传头像',
+                width: 400,
+                height: 100,
+                closed: false,
+                cache: false,
+                modal: true,
+                buttons:"#dlg-button",
+                onClose:function () {
+                    $("#dd").form('clear');//关闭是清空form表单数据
+
+                }
+            });
+        }
+        /*上传用户-提交*/
+        function upstu() {
+            debugger;
+            var b=checkType();
+            if(b==false){
+                return false;
+			}
+            var formData = new FormData($("#upload")[0]);
+            $.ajax({
+                url: '/file/fileUpload',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $("#msm").html("上传成功");
+
+                },
+                error: function (data) {
+                    // layer.msg("上传失败",{icon: 5});
+                    $("#msm").html("上传失败");
+                }
+            })
+        }
+        function closestu() {
+            debugger;
+            var tab =  self.parent.$('#tabs').tabs('getSelected');
+            var url = $(tab.panel('options')).attr('href');
+            tab.panel('refresh', url);
+            $('#dd').dialog("close");
+        }
+        function checkType(){
+            //得到上传文件的值
+            var fileName=document.getElementById("bu").value;
+            //返回String对象中子字符串最后出现的位置.
+            var seat=fileName.lastIndexOf(".");
+            //返回位于String对象中指定位置的子字符串并转换为小写.
+            var extension=fileName.substring(seat).toLowerCase();
+            //判断允许上传的文件格式
+            //if(extension!=".jpg"&&extension!=".jpeg"&&extension!=".gif"&&extension!=".png"&&extension!=".bmp"){
+            //alert("不支持"+extension+"文件的上传!");
+            //return false;
+            //}else{
+            //return true;
+            //}
+            var allowed=[".jpg",".gif",".png",".jpeg"];
+            for(var i=0;i<allowed.length;i++){
+                if(!(allowed[i]!=extension)){
+                    return true;
+                }
+            }
+            $.messager.alert('提示','格式不支持');
+            return false;
+        }
+	</script>
+</head>
+<body style="margin: 1px;">
+<div id="error" class="error"><p style="margin-left: 30px;margin-top: 50px"><span id="info" style="font-size: 20px;color: red"></span></p>
+	<p style="padding: 10px"><HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3></p>
+</div>
+<!--学生信息展示-->
+<div class="cztable" id="stu">
+	<table width="100%" cellpadding="0" cellspacing="0" style="background-color: white">
+		<tr>
+			<td align="right" width="80">姓名：</td>
+			<td><span id="stuName" class="span"></span></td>
+			<td align="right" width="90">身份证号码：</td>
+			<td><span id="stuPeopleCard" class="span"></span></td>
+
+			<td rowspan="10">
+				<div align="center">
+					<!--<img id="pic_face"  height="160" width="120" src="../Images/Student/photo.jpg" style="padding:2px 2px 5px; border:1px #ddd solid;">-->
+					<img src="" id="photo" height="160" width="120" style="padding:2px 2px 5px; border:1px #ddd solid;">
+				</div>
+			&nbsp;</td>
+
+		</tr>
+		<tr>
+			<td align="right">性别：</td>
+			<td><span id="stuSex" class="span"></span></td>
+			<td align="right">学号：</td>
+			<td><span id="stuCardNum" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">民族：</td>
+			<td><span id="stuNation" class="span"></span></td>
+			<td align="right">生日：</td>
+			<td><span id="stuBirthday" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">籍贯：</td>
+			<td><span id="stuPlace" class="span"></span></td>
+			<td align="right">入学时间：</td>
+			<td><span id="stuGoyear" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">班级：</td>
+			<td><span id="stuClass" class="span"></span></td>
+
+			<td align="right">政治面貌：</td>
+			<td><span id="stuPolicital" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">职位：</td>
+			<td><span id="stuJob" class="span"></span></td>
+			<td align="right">宿舍号：</td>
+			<td><span id="stuDorm" class="span"></span></td>
+		</tr>
+
+		<tr>
+			<td colspan="4" align="left">联系方式（如联系方式有变动请及时修改，以便能及时联系到你。谢谢！）</td>
+
+		</tr>
+		<tr>
+			<td align="right">手机号码：</td>
+			<td><span id="stuPhone" class="span"></span></td>
+			<td align="right">微信号：</td>
+			<td><span id="stuWchart" class="span"></span></td>
+
+		</tr>
+		<tr>
+			<td align="right">QQ:</td>
+			<td><span id="stuQq" class="span"></span></td>
+			<td align="right" >电子邮箱：</td>
+			<td><span id="stuEmail" class="span"></span></td>
+
+		</tr>
+		<tr>
+			<td align="right">家长姓名:</td>
+			<td><span id="stuParent" class="span"></span></td>
+			<td align="right">家长联系方式：</td>
+			<td><span id="stuParentPhone" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">联系地址：</td>
+			<td colspan="4"><span id="stuAddress"></span></td>
+		</tr>
+		<tr align="center">
+			<td colspan="5" height="40">
+				<div align="center">
+					<input type="button" id="button2" value="上传头像" onclick="submitMail()" class="input2" />
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+<div class="cztable" id="tea">
+	<table width="100%" cellpadding="0" cellspacing="0" style="background-color: white">
+		<tr>
+			<td align="right" width="80">姓名：</td>
+			<td><span id="teaName" class="span"></span></td>
+			<td align="right" width="90">身份证号码：</td>
+			<td><span id="teaPeopleCard" class="span"></span></td>
+
+			<td rowspan="8">
+				<div align="center">
+					<img src="" id="photo2" height="160" width="120" style="padding:2px 2px 5px; border:1px #ddd solid;">
+				</div>&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td align="right">性别：</td>
+			<td><span id="teaSex" class="span"></span></td>
+			<td align="right">工号：</td>
+			<td><span id="teaCardNum" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">专业：</td>
+			<td><span id="teaSubject" class="span"></span></td>
+			<td align="right">政治面貌：</td>
+			<td><span id="teaPolicital" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">毕业院校：</td>
+			<td><span id="teaUniversity" class="span"></span></td>
+			<td align="right">学历：</td>
+			<td><span id="teaEducation" class="span"></span></td>
+		</tr>
+		<tr>
+			<td align="right">年级：</td>
+			<td><span id="teaGrade" class="span"></span></td>
+
+			<td align="right">班级：</td>
+			<td><span id="teaCalss" class="span"></span></td>
+		</tr>
+
+		<tr>
+			<td colspan="4" align="left">联系方式（如联系方式有变动请及时修改，以便能及时联系到你。谢谢！）</td>
+
+		</tr>
+		<tr>
+			<td align="right">手机号码：</td>
+			<td><span id="teaPhone" class="span"></span></td>
+			<td align="right">微信号：</td>
+			<td><span id="teaWchart" class="span"></span></td>
+
+		</tr>
+		<tr>
+			<td align="right">QQ:</td>
+			<td><span id="teaQq" class="span"></span></td>
+			<td align="right">电子邮箱：</td>
+			<td><span id="teaMail" class="span"></span></td>
+
+		</tr>
+		<tr>
+			<td align="right">联系地址：</td>
+			<td colspan="4"><span id="teaAddress"></span></td>
+		</tr>
+		<tr align="center">
+			<td colspan="5" height="40">
+				<div align="center" >
+
+					<input type="button" id="button3" value="上传头像" onclick="submitMail()" class="input2" />
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+<div id="dd">
+	<form  id="upload" action="/file/fileUpload" method="post" enctype="multipart/form-data">
+		<input type="file" class="easyui-filebox" id="bu" name="file"/><span id="msm"></span>
+	</form>
+</div>
+<div id="dlg-button">
+	<a href="javascript:upstu()" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:closestu()" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+</body>
+</html>

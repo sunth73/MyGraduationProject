@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.newsmapper.NewsMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.News" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="news" property="news" jdbcType="VARCHAR" />
+    <result column="t_date" property="tDate" jdbcType="TIMESTAMP" />
+    <result column="send_id" property="sendId" jdbcType="INTEGER" />
+    <result column="receive_id" property="receiveId" jdbcType="INTEGER" />
+    <result column="is_show" property="isShow" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, news, t_date, send_id, receive_id, is_show
+  </sql>
+  <select id="newsnum" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    select count(1) from t_news
+    where is_show='1'
+    and receive_id=#{receiveId}
+  </select>
+  <select id="newslist" resultType="com.wmk.porject.bean.News" parameterType="com.wmk.porject.bean.News">
+    SELECT tn.id id, tn.news news, tn.t_date tDate, tn.send_id sendId, tn.receive_id receiveId,
+    case tn.is_show when '0' then '已读' when '1' then '未读' else '未知错误' end isShow,tu.empname userName
+    FROM t_news tn
+    INNER JOIN t_user tu ON tu.userId=tn.send_id
+    where  tn.receive_id=#{receiveId}
+    <if test="userName!=null and ''!=userName">
+      and tu.empname like CONCAT(#{userName,jdbcType=VARCHAR},'%')
+    </if>
+     ORDER BY tn.is_show DESC,tn.t_date DESC
+  </select>
+  <select id="newslisttwo" resultType="com.wmk.porject.bean.News" parameterType="com.wmk.porject.bean.News">
+    SELECT tn.id id, tn.news news, tn.t_date tDate, tn.send_id sendId, tn.receive_id receiveId,
+    case tn.is_show when '0' then '已读' when '1' then '未读' else '未知错误' end isShow,tu.empname userName
+    FROM t_news tn
+    INNER JOIN t_user tu ON tu.userId=tn.receive_id
+    where  tn.send_id=#{sendId}
+    <if test="receiveName!=null and ''!=receiveName">
+     and tu.empname like CONCAT(#{receiveName,jdbcType=VARCHAR},'%')
+    </if>
+     ORDER BY tn.is_show DESC,tn.t_date DESC
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_news
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_news
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.News" >
+    insert into t_news (id, news, t_date, 
+      send_id, receive_id, is_show
+      )
+    values (#{id,jdbcType=VARCHAR}, #{news,jdbcType=VARCHAR}, #{tDate,jdbcType=TIMESTAMP}, 
+      #{sendId,jdbcType=INTEGER}, #{receiveId,jdbcType=INTEGER}, #{isShow,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.News" >
+    insert into t_news
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="news != null" >
+        news,
+      </if>
+      <if test="tDate != null" >
+        t_date,
+      </if>
+      <if test="sendId != null" >
+        send_id,
+      </if>
+      <if test="receiveId != null" >
+        receive_id,
+      </if>
+      <if test="isShow != null" >
+        is_show,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="news != null" >
+        #{news,jdbcType=VARCHAR},
+      </if>
+      <if test="tDate != null" >
+        #{tDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendId != null" >
+        #{sendId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveId != null" >
+        #{receiveId,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null" >
+        #{isShow,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.News" >
+    update t_news
+    <set >
+      <if test="news != null" >
+        news = #{news,jdbcType=VARCHAR},
+      </if>
+      <if test="tDate != null" >
+        t_date = #{tDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendId != null" >
+        send_id = #{sendId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveId != null" >
+        receive_id = #{receiveId,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null" >
+        is_show = #{isShow,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.News" >
+    update t_news
+    set news = #{news,jdbcType=VARCHAR},
+      t_date = #{tDate,jdbcType=TIMESTAMP},
+      send_id = #{sendId,jdbcType=INTEGER},
+      receive_id = #{receiveId,jdbcType=INTEGER},
+      is_show = #{isShow,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.teachermapper.TeacherMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Teacher" >
+    <id column="tea_id" property="teaId" jdbcType="VARCHAR" />
+    <result column="tea_name" property="teaName" jdbcType="VARCHAR" />
+    <result column="tea_login_name" property="teaLoginName" jdbcType="VARCHAR" />
+    <result column="tea_calss" property="teaCalss" jdbcType="VARCHAR" />
+    <result column="tea_class_num" property="teaClassNum" jdbcType="VARCHAR" />
+    <result column="tea_card_num" property="teaCardNum" jdbcType="VARCHAR" />
+    <result column="tea_sex" property="teaSex" jdbcType="VARCHAR" />
+    <result column="tea_subject" property="teaSubject" jdbcType="VARCHAR" />
+    <result column="tea_policital" property="teaPolicital" jdbcType="VARCHAR" />
+    <result column="tea_phone" property="teaPhone" jdbcType="VARCHAR" />
+    <result column="tea_qq" property="teaQq" jdbcType="VARCHAR" />
+    <result column="tea_wchart" property="teaWchart" jdbcType="VARCHAR" />
+    <result column="tea_university" property="teaUniversity" jdbcType="VARCHAR" />
+    <result column="tea_education" property="teaEducation" jdbcType="VARCHAR" />
+    <result column="tea_address" property="teaAddress" jdbcType="VARCHAR" />
+    <result column="tea_phote_url" property="teaPhoteUrl" jdbcType="VARCHAR" />
+    <result column="tea_mail" property="teaMail" jdbcType="VARCHAR" />
+    <result column="tea_people_card" property="teaPeopleCard" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tea_id, tea_name, tea_login_name, tea_calss, tea_class_num, tea_card_num, tea_sex, 
+    tea_subject, tea_policital, tea_phone, tea_qq, tea_wchart, tea_university, tea_education, 
+    tea_address, tea_phote_url, tea_mail,tea_people_card
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_teacher
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_teacher
+    where tea_id = #{teaId,jdbcType=VARCHAR};
+    delete from t_user
+    where userName = #{teaLoginName,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Teacher" >
+    insert into t_teacher (tea_id, tea_name, tea_login_name, 
+      tea_calss, tea_class_num, tea_card_num, 
+      tea_sex, tea_subject, tea_policital, 
+      tea_phone, tea_qq, tea_wchart, 
+      tea_university, tea_education, tea_address, 
+      tea_phote_url, tea_mail)
+    values (#{teaId,jdbcType=VARCHAR}, #{teaName,jdbcType=VARCHAR}, #{teaLoginName,jdbcType=VARCHAR}, 
+      #{teaCalss,jdbcType=VARCHAR}, #{teaClassNum,jdbcType=VARCHAR}, #{teaCardNum,jdbcType=VARCHAR}, 
+      #{teaSex,jdbcType=VARCHAR}, #{teaSubject,jdbcType=VARCHAR}, #{teaPolicital,jdbcType=VARCHAR}, 
+      #{teaPhone,jdbcType=VARCHAR}, #{teaQq,jdbcType=VARCHAR}, #{teaWchart,jdbcType=VARCHAR}, 
+      #{teaUniversity,jdbcType=VARCHAR}, #{teaEducation,jdbcType=VARCHAR}, #{teaAddress,jdbcType=VARCHAR}, 
+      #{teaPhoteUrl,jdbcType=VARCHAR}, #{teaMail,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Teacher" >
+    insert into t_teacher
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="teaId != null" >
+        tea_id,
+      </if>
+      <if test="teaName != null" >
+        tea_name,
+      </if>
+      <if test="teaLoginName != null" >
+        tea_login_name,
+      </if>
+      <if test="teaCalss != null" >
+        tea_calss,
+      </if>
+      <if test="teaClassNum != null" >
+        tea_class_num,
+      </if>
+      <if test="teaCardNum != null" >
+        tea_card_num,
+      </if>
+      <if test="teaSex != null" >
+        tea_sex,
+      </if>
+      <if test="teaSubject != null" >
+        tea_subject,
+      </if>
+      <if test="teaPolicital != null" >
+        tea_policital,
+      </if>
+      <if test="teaPhone != null" >
+        tea_phone,
+      </if>
+      <if test="teaQq != null" >
+        tea_qq,
+      </if>
+      <if test="teaWchart != null" >
+        tea_wchart,
+      </if>
+      <if test="teaUniversity != null" >
+        tea_university,
+      </if>
+      <if test="teaEducation != null" >
+        tea_education,
+      </if>
+      <if test="teaAddress != null" >
+        tea_address,
+      </if>
+      <if test="teaPhoteUrl != null" >
+        tea_phote_url,
+      </if>
+      <if test="teaMail != null" >
+        tea_mail,
+      </if>
+      <if test="tea_people_card != null" >
+        teaPeopleCard,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="teaId != null" >
+        #{teaId,jdbcType=VARCHAR},
+      </if>
+      <if test="teaName != null" >
+        #{teaName,jdbcType=VARCHAR},
+      </if>
+      <if test="teaLoginName != null" >
+        #{teaLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="teaCalss != null" >
+        #{teaCalss,jdbcType=VARCHAR},
+      </if>
+      <if test="teaClassNum != null" >
+        #{teaClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="teaCardNum != null" >
+        #{teaCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="teaSex != null" >
+        #{teaSex,jdbcType=VARCHAR},
+      </if>
+      <if test="teaSubject != null" >
+        #{teaSubject,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPolicital != null" >
+        #{teaPolicital,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPhone != null" >
+        #{teaPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="teaQq != null" >
+        #{teaQq,jdbcType=VARCHAR},
+      </if>
+      <if test="teaWchart != null" >
+        #{teaWchart,jdbcType=VARCHAR},
+      </if>
+      <if test="teaUniversity != null" >
+        #{teaUniversity,jdbcType=VARCHAR},
+      </if>
+      <if test="teaEducation != null" >
+        #{teaEducation,jdbcType=VARCHAR},
+      </if>
+      <if test="teaAddress != null" >
+        #{teaAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPhoteUrl != null" >
+        #{teaPhoteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="teaMail != null" >
+        #{teaMail,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPeopleCard != null" >
+        #{teaPeopleCard},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Teacher" >
+    update t_teacher
+    <set >
+      <if test="teaName != null" >
+        tea_name = #{teaName,jdbcType=VARCHAR},
+      </if>
+      <if test="teaLoginName != null" >
+        tea_login_name = #{teaLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="teaCalss != null" >
+        tea_calss = #{teaCalss,jdbcType=VARCHAR},
+      </if>
+      <if test="teaClassNum != null" >
+        tea_class_num = #{teaClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="teaCardNum != null" >
+        tea_card_num = #{teaCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="teaSex != null" >
+        tea_sex = #{teaSex,jdbcType=VARCHAR},
+      </if>
+      <if test="teaSubject != null" >
+        tea_subject = #{teaSubject,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPolicital != null" >
+        tea_policital = #{teaPolicital,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPhone != null" >
+        tea_phone = #{teaPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="teaQq != null" >
+        tea_qq = #{teaQq,jdbcType=VARCHAR},
+      </if>
+      <if test="teaWchart != null" >
+        tea_wchart = #{teaWchart,jdbcType=VARCHAR},
+      </if>
+      <if test="teaUniversity != null" >
+        tea_university = #{teaUniversity,jdbcType=VARCHAR},
+      </if>
+      <if test="teaEducation != null" >
+        tea_education = #{teaEducation,jdbcType=VARCHAR},
+      </if>
+      <if test="teaAddress != null" >
+        tea_address = #{teaAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPhoteUrl != null" >
+        tea_phote_url = #{teaPhoteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="teaMail != null" >
+        tea_mail = #{teaMail,jdbcType=VARCHAR},
+      </if>
+      <if test="teaPeopleCard != null" >
+        tea_people_card=#{teaPeopleCard},
+      </if>
+    </set>
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Teacher" >
+    update t_teacher
+    set tea_name = #{teaName,jdbcType=VARCHAR},
+      tea_login_name = #{teaLoginName,jdbcType=VARCHAR},
+      tea_calss = #{teaCalss,jdbcType=VARCHAR},
+      tea_class_num = #{teaClassNum,jdbcType=VARCHAR},
+      tea_card_num = #{teaCardNum,jdbcType=VARCHAR},
+      tea_sex = #{teaSex,jdbcType=VARCHAR},
+      tea_subject = #{teaSubject,jdbcType=VARCHAR},
+      tea_policital = #{teaPolicital,jdbcType=VARCHAR},
+      tea_phone = #{teaPhone,jdbcType=VARCHAR},
+      tea_qq = #{teaQq,jdbcType=VARCHAR},
+      tea_wchart = #{teaWchart,jdbcType=VARCHAR},
+      tea_university = #{teaUniversity,jdbcType=VARCHAR},
+      tea_education = #{teaEducation,jdbcType=VARCHAR},
+      tea_address = #{teaAddress,jdbcType=VARCHAR},
+      tea_phote_url = #{teaPhoteUrl,jdbcType=VARCHAR},
+      tea_mail = #{teaMail,jdbcType=VARCHAR}
+    where tea_id = #{teaId,jdbcType=VARCHAR}
+  </update>
+  <select id="teaList" resultType="com.wmk.porject.bean.Teacher" parameterType="com.wmk.porject.bean.Teacher" >
+    select
+    tea_id teaId, tea_name teaName, tea_login_name teaLoginName, tea_calss teaCalss, tea_class_num teaClassNum, tea_card_num teaCardNum,
+    case tea_sex  when tea_sex='1' then '男' when tea_sex='2' then '女' else '错误' end teaSex,
+    tea_subject teaSubject, tea_policital teaPolicital, tea_phone teaPhone, tea_qq teaQq,  tea_wchart teaWchart,
+    tea_university teaUniversity, tea_education teaEducation,
+    tea_address teaAddress, tea_phote_url teaPhoteUrl,
+    tea_people_card teaPeopleCard,tea_mail teaMail
+    from t_teacher
+    where 1=1
+    <if test="teaName != null and ''!=teaName">
+      and tea_name like CONCAT('%',#{teaName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="teaCalss != null and ''!=teaCalss">
+      and tea_calss = #{teaCalss,jdbcType=VARCHAR},
+    </if>
+  </select>
+  <select id="selectTeacherByUserId" resultType="com.wmk.porject.bean.Teacher" parameterType="java.lang.Integer" >
+    select
+    tea_id teaId, tea_name teaName, tea_login_name teaLoginName, tea_calss teaCalss, tea_class_num teaClassNum, tea_card_num teaCardNum,
+    case tea_sex  when tea_sex='1' then '男' when tea_sex='2' then '女' else '错误' end teaSex,
+    tea_subject teaSubject, tea_policital teaPolicital, tea_phone teaPhone, tea_qq teaQq,  tea_wchart teaWchart,
+    tea_university teaUniversity, tea_education teaEducation,
+    tea_address teaAddress, tea_phote_url teaPhoteUrl,
+    tea_people_card teaPeopleCard,tea_mail teaMail
+    from t_teacher tea inner join t_user u on u.userName=tea.tea_login_name
+    where  u.userId = #{userid}
+  </select>
+  <select id="selectClassNumByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_teacher
+    where tea_login_name = #{teaLoginName,jdbcType=VARCHAR}
+  </select>
+  <select id="selectlistTea" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from t_teacher
+  </select>
+  <select id="selectUserIdByTeaId" resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT u.userId
+    FROM t_user u
+    INNER JOIN t_teacher t ON t.tea_login_name=u.userName
+    WHERE t.tea_id=#{teaId}
+  </select>
+</mapper>

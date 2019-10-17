@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.noticemapper.NoticeMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Notice" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="text" property="text" jdbcType="VARCHAR" />
+    <result column="creator" property="creator" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_show" property="isShow" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, text, creator, create_time,is_show
+  </sql>
+  <select id="noticeList" resultType="com.wmk.porject.bean.Notice" parameterType="java.lang.String" >
+    SELECT tn.id id,tn.title title,tn.text text,tn.creator creator,tn.create_time createTime,tu.empname creatorName
+   FROM t_notice tn
+    INNER JOIN t_user tu
+    ON tu.userId=tn.creator
+     where is_show='0' order by create_time desc
+  </select>
+  <select id="selectByPrimaryKey" resultType="com.wmk.porject.bean.Notice" parameterType="java.lang.String" >
+     SELECT tn.id id,tn.title title,tn.text text,tn.creator creator,tn.create_time createTime,tu.empname creatorName
+    FROM t_notice tn
+    INNER JOIN t_user tu
+    ON tu.userId=tn.creator
+    where tn.id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByCreateor" resultType="com.wmk.porject.bean.Notice" parameterType="com.wmk.porject.bean.Notice" >
+     SELECT tn.id id,tn.title title,tn.text text,tn.creator creator,tn.create_time createTime,tu.empname creatorName,
+     case is_show when '0' then '展示' when '1' then  '隐藏' when '2' then '过期' else '未知' end isShow
+    FROM t_notice tn
+    INNER JOIN t_user tu
+    ON tu.userId=tn.creator
+    where 1=1
+    <if test="creator!=null and ''!=creator">
+      and tn.creator = #{creator,jdbcType=INTEGER}
+    </if>
+    <if test="title!=null and ''!=title">
+       and title like CONCAT('%',#{title,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_notice
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Notice" >
+    insert into t_notice (id, title, text, 
+      creator, create_time)
+    values (#{id,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR}, 
+      #{creator,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Notice" >
+    insert into t_notice
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="text != null" >
+        text,
+      </if>
+      <if test="creator != null" >
+        creator,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="isShow != null" >
+        is_show,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null" >
+        #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isShow != null" >
+        #{isShow,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Notice" >
+    update t_notice
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null" >
+        text = #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        creator = #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isShow != null" >
+        is_show = #{isShow,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Notice" >
+    update t_notice
+    set title = #{title,jdbcType=VARCHAR},
+      text = #{text,jdbcType=VARCHAR},
+      creator = #{creator,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

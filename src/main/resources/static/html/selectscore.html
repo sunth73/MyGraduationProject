@@ -1,0 +1,331 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>成绩录入</title><link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/student.css">
+	<script src="../js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../datagrid-cellediting/datagrid-cellediting.js"></script>
+	<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+<script type="text/javascript">
+	var flag=0;
+    $(function(){
+        $("#tb").hide();
+        var message={}
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tclass/gradeList",message);
+        $('#grade').combobox({
+            data:msg.body,
+            textField:'tcGradeNum',
+            valueField:'tcGradeNum'
+        });
+        $("#examname").combobox({disabled: true});
+        $("#claseename").combobox({disabled: true});
+        $("#sub").combobox({disabled: true});
+        $("#grade").combobox({
+            onSelect: function () {
+                if($("#grade").combobox('getValue').length>0){
+                    $("#examname").combobox({disabled: false})
+                    var messag={
+                        "eClass":$("#grade").combobox('getValue')
+                    }
+                    var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/exam/list",messag);
+                    $('#examname').combobox({
+                        data:msg1.body,
+                        textField:'eName',
+                        valueField:'eId'
+                    });
+
+                }
+            }
+
+        });
+        $("#examname").combobox({
+            onSelect: function () {
+                if($("#examname").combobox('getValue').length>0){
+                    $("#claseename").combobox({disabled: false});
+                    $("#sub").combobox({disabled: false});
+                    var message2={
+                        "tcGradeNum":$("#grade").combobox('getValue')
+                    }
+                    var msg2= jQuery.fn.commonPlugin.commonAjaxJson("/tclass/classList",message2);
+                    $('#claseename').combobox({
+                        data:msg2.body,
+                        textField:'tcClassNum',
+                        valueField:'tcClassNum'
+                    });
+
+                    var message3 = {}
+                    var msg3 = jQuery.fn.commonPlugin.commonAjaxJson("/subject/list", message3);
+                    $('#sub').combobox({
+                        data: msg3.body,
+                        textField: 'subName',
+                        valueField: 'subCode'
+                    });
+                    datagrid();
+
+                }
+            }
+		});
+        $("#claseename").combobox({
+            onSelect: function () {
+                datagrid();
+            }
+        });
+        $("#sub").combobox({
+            onSelect: function () {
+                datagrid();
+            }
+        });
+        $("#grade").combobox('textbox').bind('blur', function(e){
+            if($("#grade").combobox('getValue').length<=0){
+                $("#tb").hide();
+                $("#dlg-button").hide();
+                $("#examname").combobox('clear');
+                $("#claseename").combobox('clear');
+                $("#sub").combobox('clear');
+                $("#examname").combobox({disabled: true});
+                $("#claseename").combobox({disabled: true});
+                $("#sub").combobox({disabled: true});
+                $("#dg").datagrid("loadData", { total: 0, rows: [] });
+            }
+        });
+        $("#examname").combobox('textbox').bind('blur', function(e){
+            if($("#examname").combobox('getValue').length<=0){
+                $("#tb").hide();
+                $("#dlg-button").hide();
+                $("#claseename").combobox('clear');
+                $("#sub").combobox('clear');
+                $("#claseename").combobox({disabled: true});
+                $("#sub").combobox({disabled: true});
+                $("#dg").datagrid("loadData", { total: 0, rows: [] });
+            }
+        });
+        $("#sub").combobox('textbox').bind('blur', function(e){
+            datagrid();
+        });
+        $("#claseename").combobox('textbox').bind('blur', function(e){
+            datagrid();
+        });
+    });
+    function save() {
+    }
+
+    function datagrid() {
+        $("#tb").show();
+        if ($("#claseename").combobox('getValue').length > 0  && $("#sub").combobox('getValue').length<=0) {
+            flag=1;
+            var messageb= {
+                "sExamId":$("#examname").combobox('getValue'),
+                "stuClass":$("#claseename").combobox('getValue')
+            }
+            var msgb = jQuery.fn.commonPlugin.commonAjaxJson("/score/selectScorelist", messageb);
+            $('#dg').datagrid({
+                data:msgb.body,
+                singleSelect:true,
+                // title:'公告列表',
+                fitColumns:true,
+                // pagination:true,
+                rownumbers:true,
+                fit:false,
+                toolbar:"#tb",
+                buttons:"#dlg-buttons",
+                // onClickRow:method,
+                columns:[[
+                    {checkbox: true},
+                    {field:'stuClass',title:'班级',width:100,align:'center'},
+                    {field:'stuName',title:'姓名',width:100,align:'center'},
+                    {field:'stuCardNum',title:'学号',width:100,align:'center'},
+                    {field:'chinese',title:'语文',width:100,align:'center'},
+                    {field:'math',title:'数学',width:100,align:'center'},
+                    {field:'english',title:'英语',width:100,align:'center'},
+                    {field:'physics',title:'物理',width:100,align:'center'},
+                    {field:'chemistry',title:'化学',width:100,align:'center'},
+                    {field:'biology',title:'生物',width:100,align:'center'},
+                    {field:'geography',title:'地理',width:100,align:'center'},
+                    {field:'history',title:'历史',width:100,align:'center'},
+                    {field:'politics',title:'政治',width:100,align:'center'},
+                    {field:'totalScore',title:'总分',width:100,align:'center'},
+                    {field:'ranking',title:'排名',width:100,align:'center'}
+                ]],
+
+            });
+        }else if($("#claseename").combobox('getValue').length <= 0  && $("#sub").combobox('getValue').length>0){
+            flag=2;
+            var messagec= {
+                "eId":$("#examname").combobox('getValue'),
+                "subCode":$("#sub").combobox('getValue')
+            }
+            var msgc = jQuery.fn.commonPlugin.commonAjaxJson("/score/scolist", messagec);
+            $('#dg').datagrid({
+                data:msgc.body,
+                singleSelect:true,
+                // title:'公告列表',
+                fitColumns:true,
+                // pagination:true,
+                rownumbers:true,
+                fit:false,
+                toolbar:"#tb",
+                buttons:"#dlg-buttons",
+                // onClickRow:method,
+                columns:[[
+                    {checkbox: true},
+                    {field:'stuClass',title:'班级',width:100,align:'center'},
+                    {field:'stuCardNum',title:'学号',width:100,align:'center'},
+                    {field:'stuName',title:'姓名',width:100,align:'center'},
+                    {field:'subName',title:'科目',width:100,align:'center'},
+                    {field:'sScore',title:'分数',width:100,align:'center',editor:"numberbox"},
+                    {field:'rank',title:'排名',width:100,align:'center'}
+
+                ]],
+
+            });
+        }else if($("#claseename").combobox('getValue').length > 0  && $("#sub").combobox('getValue').length>0){
+            flag=3;
+            var messaged={
+                "eId":$("#examname").combobox('getValue'),
+                "stuClass":$("#claseename").combobox('getValue'),
+                "subCode":$("#sub").combobox('getValue')
+            }
+            var msgd= jQuery.fn.commonPlugin.commonAjaxJson("/score/scolist",messaged);
+            $('#dg').datagrid({
+                data:msgd.body,
+                singleSelect:true,
+                // title:'公告列表',
+                fitColumns:true,
+                // pagination:true,
+                rownumbers:true,
+                fit:false,
+                toolbar:"#tb",
+                buttons:"#dlg-buttons",
+                // onClickRow:method,
+                columns:[[
+                    {checkbox: true},
+                    {field:'stuClass',title:'班级',width:100,align:'center'},
+                    {field:'stuCardNum',title:'学号',width:100,align:'center'},
+                    {field:'stuName',title:'姓名',width:100,align:'center'},
+                    {field:'subName',title:'科目',width:100,align:'center'},
+                    {field:'sScore',title:'分数',width:100,align:'center',editor:"numberbox"},
+                    {field:'rank',title:'排名',width:100,align:'center'}
+
+                ]],
+
+            });
+        }else if($("#claseename").combobox('getValue').length <= 0  && $("#sub").combobox('getValue').length<=0){
+            flag=4;
+            var messagea = {
+                "sExamId":$("#examname").combobox('getValue')
+            }
+            var msga = jQuery.fn.commonPlugin.commonAjaxJson("/score/selectScorelist", messagea);
+            $('#dg').datagrid({
+                data:msga.body,
+                singleSelect:true,
+                // title:'公告列表',
+                fitColumns:true,
+                // pagination:true,
+                rownumbers:true,
+                fit:false,
+                toolbar:"#tb",
+                buttons:"#dlg-buttons",
+                // onClickRow:method,
+                columns:[[
+                    {checkbox: true},
+                    {field:'stuClass',title:'班级',width:100,align:'center'},
+                    {field:'stuName',title:'姓名',width:100,align:'center'},
+                    {field:'stuCardNum',title:'学号',width:100,align:'center'},
+                    {field:'chinese',title:'语文',width:100,align:'center'},
+                    {field:'math',title:'数学',width:100,align:'center'},
+                    {field:'english',title:'英语',width:100,align:'center'},
+                    {field:'physics',title:'物理',width:100,align:'center'},
+                    {field:'chemistry',title:'化学',width:100,align:'center'},
+                    {field:'biology',title:'生物',width:100,align:'center'},
+                    {field:'geography',title:'地理',width:100,align:'center'},
+                    {field:'history',title:'历史',width:100,align:'center'},
+                    {field:'politics',title:'政治',width:100,align:'center'},
+                    {field:'totalScore',title:'总分',width:100,align:'center'},
+                    {field:'ranking',title:'排名',width:100,align:'center'}
+                ]],
+
+            });
+        }
+    }
+    /**
+     * 导出excle
+     */
+    function excel() {
+        debugger;
+        var sExamId='';
+        var stuClass='';
+        var eId='';
+        var subCode='';
+        if(flag==1){
+            sExamId=$("#examname").combobox('getValue');
+            stuClass=$("#claseename").combobox('getValue');
+            location.href='/score/exporfortscore?flag='+flag+'&&stuClass='+stuClass+'&&subCode='+subCode+'&&sExamId='+sExamId+'&&eId='+eId;
+		}else if(flag==2){
+            eId=$("#examname").combobox('getValue');
+            subCode=$("#sub").combobox('getValue');
+            location.href='/score/exporfortscore?flag='+flag+'&&stuClass='+stuClass+'&&subCode='+subCode+'&&sExamId='+sExamId+'&&eId='+eId;
+		}else if(flag==3){
+            var eId=$("#examname").combobox('getValue');
+			var stuClass=$("#claseename").combobox('getValue');
+            var subCode=$("#sub").combobox('getValue');
+            location.href='/score/exporfortscore?flag='+flag+'&&stuClass='+stuClass+'&&subCode='+subCode+'&&sExamId='+sExamId+'&&eId='+eId;
+		}else if(flag==4){
+            var sExamId=$("#examname").combobox('getValue');
+            location.href='/score/exporfortscore?flag='+flag+'&&stuClass='+stuClass+'&&subCode='+subCode+'&&sExamId='+sExamId+'&&eId='+eId;
+            // location.href='/score/exporfortscore?flag='+flag+'&&sExamId='+sExamId;
+		}
+
+    }
+</script>
+</head>
+<body>
+<div id="cc" class="easyui-layout" style="width:100%;height:100%;">
+	<!--<div data-options="region:'north',title:'North Title',split:true" style="height:100px;"></div>-->
+	<!--<div data-options="region:'south',title:'South Title',split:true" style="height:100px;"></div>-->
+	<!--<div data-options="region:'east',title:'East',split:true" style="width:100px;"></div>-->
+	<div data-options="region:'west',title:'查找条件',split:true" style="width:350px;">
+		<table style="width: 320px">
+			<tr>
+				<td>选择年级：</td>
+				<td>
+					<input type="text" id="grade" name="grade" class="easyui-validatebox" />
+				</td>
+			</tr>
+			<tr>
+				<td>考试名称：</td>
+				<td>
+					<input type="text" id="examname" name="examname" class="easyui-validatebox" />
+				</td>
+			</tr>
+			<tr>
+				<td>班级名称：</td>
+				<td>
+					<input type="text" id="claseename" name="claseename" class="easyui-validatebox" />
+				</td>
+			</tr>
+			<tr>
+				<td>选择科目：</td>
+				<td>
+					<input type="text" id="sub" name="sub" class="easyui-validatebox" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div data-options="region:'center',title:'详细信息'" style="padding:5px;text-align:center;">
+		<table id="dg" data-bind="datagrid:grid">
+		</table>
+		<div id="tb">
+			<div>
+				<a href="javascript:excel()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出</a>
+				<a href="javascript:sendmessage()" class="easyui-linkbutton" iconCls="icon-add" plain="true">发送家长</a>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

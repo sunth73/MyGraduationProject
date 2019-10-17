@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>宿舍管理</title>
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/demo/demo.css">
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+<script type="text/javascript" src="../utiljs/dateUtil.js"></script>
+<script type="text/javascript" src="../validate/validate.js"></script>
+<script type="text/javascript" src="json/dnum.js"></script>
+<script type="text/javascript" src="json/classname.js"></script>
+<script type="text/javascript">
+	var flag="0";//判断模态框用途(添加/修改)
+	var resultNum="";
+	/*
+	* 初始化加载数据
+	* */
+	$(function(){
+	    debugger;
+        $("#error").hide();
+        currentUser = JSON.parse(sessionStorage.getItem("loginUser"));
+         // if(currentUser.roleid=="4"){
+        if(currentUser.roleIds.indexOf("4")!=-1) {
+            $("#admin").hide();
+            $("#teacher").show();
+            $("#student").hide();
+
+            $('#maxDate2').datebox({});
+            $('#minDate2').datebox({});
+            $('#Dnum2').combobox({
+                data: dnum,
+                textField: 'name',
+                valueField: 'name'
+            });
+            var message = {
+                "maxDate": $('#maxDate2').datebox('getValue'),
+                "minDate": $('#minDate2').datebox('getValue'),
+                "dormNum": $("#Dnum2").combobox('getValue')
+            }
+            var msg = jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByTeacher", message);
+            $('#dg').datagrid({
+                data: msg.body,
+                singleSelect: true,
+                title: '宿舍管理',
+                fitColumns: true,
+                // pagination:true,
+                rownumbers: true,
+                fit: true,
+                toolbar: "#tb",
+                columns: [[
+                    {checkbox: true},
+                    {field: 'dormClassNum', title: '班级', width: 100, align: 'center'},
+                    {field: 'dormNum', title: '宿舍号', width: 100, align: 'center'},
+                    {field: 'tdsDate', title: '日期', width: 100, align: 'center'},
+                    {field: 'tdsGrade', title: '评分', width: 100, align: 'center'},
+                    {field: 'tdsEvaluate', title: '评价', width: 100, align: 'center'},
+                    {field: 'ranking', title: '宿舍排名', width: 100, align: 'center'}
+                ]],
+            });
+
+            // }else if(currentUser.roleid=="9"){
+        }else if(currentUser.roleIds.indexOf("9")!=-1) {
+            $("#admin").hide();
+            $("#teacher").hide();
+            $("#student").show();
+
+            $('#maxDate3').datebox({});
+            $('#minDate3').datebox({});
+            var message = {
+                "maxDate": $('#maxDate3').datebox('getValue'),
+                "minDate": $('#minDate3').datebox('getValue')
+            }
+            var msg = jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByStudent", message);
+            $('#dg').datagrid({
+                data: msg.body,
+                singleSelect: true,
+                title: '宿舍管理',
+                fitColumns: true,
+                // pagination:true,
+                rownumbers: true,
+                fit: true,
+                toolbar: "#tb",
+                columns: [[
+                    {checkbox: true},
+                    {field: 'dormClassNum', title: '班级', width: 100, align: 'center'},
+                    {field: 'dormNum', title: '宿舍号', width: 100, align: 'center'},
+                    {field: 'tdsDate', title: '日期', width: 100, align: 'center'},
+                    {field: 'tdsGrade', title: '评分', width: 100, align: 'center'},
+                    {field: 'tdsEvaluate', title: '评价', width: 100, align: 'center'},
+                    {field: 'ranking', title: '宿舍排名', width: 100, align: 'center'}
+                ]],
+            });
+
+            // }else if(currentUser.roleid=="2"){
+        }else if(currentUser.roleIds.indexOf("2")!=-1){
+             $("#admin").show();
+             $("#teacher").hide();
+             $("#student").hide();
+
+             $('#maxDate').datebox({
+             });
+             $('#minDate').datebox({
+             });
+             $('#classNum').combobox({
+                 data:classname,
+                 textField:'name',
+                 valueField:'name'
+             });
+             $('#Dnum').combobox({
+                 data:dnum,
+                 textField:'name',
+                 valueField:'name'
+             });
+             var message={
+                 "maxDate":$('#maxDate').datebox('getValue'),
+                 "minDate":$('#minDate').datebox('getValue'),
+                 "dormClassNum":$("#classNum").combobox('getValue'),
+                 "dormNum":$("#Dnum").combobox('getValue')
+             }
+             var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByAdmin",message);
+             console.log(msg);
+             $('#dg').datagrid({
+                 data:msg.body,
+                 singleSelect:true,
+                 title:'宿舍管理',
+                 fitColumns:true,
+                 // pagination:true,
+                 rownumbers:true,
+                 fit:true,
+                 toolbar:"#tb",
+                 columns:[[
+                     {checkbox: true},
+                     {field:'dormClassNum',title:'班级',width:100,align:'center'},
+                     {field:'dormNum',title:'宿舍号',width:100,align:'center'},
+                     {field:'tdsDate',title:'日期',width:100,align:'center'},
+                     {field:'tdsGrade',title:'评分',width:100,align:'center'},
+                     {field:'tdsEvaluate',title:'评价',width:100,align:'center'},
+                     {field:'ranking',title:'宿舍排名',width:100,align:'center'},
+                     {field:'operate',title:'操作',align:'center',width:80,
+                         formatter:function(value, row, index){
+                             var str = '<a href="#" name="opera" class="easyui-linkbutton" onclick="dormInfo('+row.tdsId+')"></a>';
+                             return str;
+                         }}
+                 ]],
+                 onLoadSuccess:function(data){
+                     $("a[name='opera']").linkbutton({text:'评价',plain:true,iconCls:'icon-add'});
+                 }
+             });
+         }else{
+             // $("#admin").hide();
+             // $("#teacher").hide();
+             // $("#student").hide();
+
+             $("#tb").hide();
+             $("#stuinfo").hide();
+             $("#dg").hide();
+             $("#dlg-button").hide();
+             $("#error").show();
+             $("#info").html("无权操作，请联系管理员");
+         }
+
+	});
+
+	function dormInfo(tdsId) {
+	    debugger;
+        $('#stuinfo').dialog({
+            title: '宿舍评价',
+            width: 600,
+            height: 300,
+            closed: false,
+            cache: false,
+            modal: true,
+            buttons:"#dlg-button",
+            onOpen:function () {
+                var message={
+                    "tdsId":tdsId
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectdormScore",message);
+                console.log(msg);
+                $("#dormClassNuma").val(msg.body.dormClassNum);
+                $("#dormNuma").val(msg.body.dormNum);
+                $("#tdsDatea").val(msg.body.tdsDate);
+                $("#tdsIda").val(tdsId);
+
+                if(msg.body.tdsGrade!=null){
+                    $("#tdsGradea").val(msg.body.tdsGrade);
+                    $("#tdsGradea").attr('readOnly','true');
+                }else if(msg.body.tdsGrade==null){
+                    $("#tdsGradea").removeAttr('readOnly','true');
+                }
+				if (msg.body.tdsEvaluate!=null){
+                    $("#tdsEvaluatea").val(msg.body.tdsEvaluate);
+                    $("#tdsEvaluatea").attr('readOnly','true');
+                }else  if (msg.body.tdsEvaluate==null){
+                    $("#tdsEvaluatea").removeAttr('readOnly','true');
+                }
+                if(msg.body.tdsGrade!=null && msg.body.tdsEvaluate!=null){
+                   $("#submit").hide();
+				}else{
+                    $("#submit").show();
+				}
+            },
+			onClose:function () {
+                if(resultNum=="0"){
+                    $.messager.alert('info','评价成功');
+                }else if(resultNum=="1"){
+                    $.messager.alert('warn','评价失败');
+                }
+                resultNum="";
+                $("#stuinfo").form('clear');//关闭是清空form表单数据
+                var message={
+                    "maxDate":$('#maxDate').datebox('getValue'),
+                    "minDate":$('#minDate').datebox('getValue'),
+                    "dormClassNum":$("#classNum").combobox('getValue'),
+                    "dormNum":$("#Dnum").combobox('getValue')
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByAdmin",message);
+                $('#dg').datagrid({
+                    data: msg.body
+                });
+
+            }
+        })
+
+    }
+    /*提交评价*/
+    function submit() {
+	    var message={
+	        "tdsId":$("#tdsIda").val(),
+			"tdsGrade":$("#tdsGradea").val(),
+			"tdsEvaluate":$("#tdsEvaluatea").val()
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/savepingjia",message);
+        resultNum=msg.header.resultCode;
+        $('#stuinfo').dialog("close");
+    }
+    /**
+     * 关闭窗口
+     */
+    function close() {
+        $('#stuinfo').dialog("close");
+
+    }
+
+	/*条件搜索*/
+    function search () {
+        var message={
+            "maxDate":$('#maxDate').datebox('getValue'),
+            "minDate":$('#minDate').datebox('getValue'),
+            "dormClassNum":$("#classNum").combobox('getValue'),
+            "dormNum":$("#Dnum").combobox('getValue')
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByAdmin",message);
+        $('#dg').datagrid({
+            data: msg.body
+        });
+    };
+    /*条件搜索*/
+    function search2 () {
+        var message={
+            "maxDate":$('#maxDate2').datebox('getValue'),
+            "minDate":$('#minDate2').datebox('getValue'),
+            "dormNum":$("#Dnum2").combobox('getValue')
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByTeacher",message);
+        $('#dg').datagrid({
+            data: msg.body
+        });
+    };
+    /*条件搜索*/
+    function search3 () {
+        var message={
+            "maxDate":$('#maxDate3').datebox('getValue'),
+            "minDate":$('#minDate3').datebox('getValue'),
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/dorm/selectDormByStudent",message);
+        $('#dg').datagrid({
+            data: msg.body
+        });
+    };
+
+
+    /**
+	 * 导出excle
+     */
+    function excelteacher() {
+        location.href='/tea/exporttea?teaName='+$("#tName").val();
+    }
+</script>
+</head>
+<body style="margin: 1px;">
+<div id="error"><p><span id="info" style="font-size: 20px;color: red"></span></p></div>
+<!--用户列表-->
+<table id="dg" class="easyui-datagrid">
+</table>
+<!--功能按钮-->
+<div id="tb">
+	<div>
+		<!--<a href="javascript:addteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加</a>-->
+		<!--<a href="javascript:updateteacher()" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>-->
+		<!--<a href="javascript:deleteteacher()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>-->
+		<!--<a href="javascript:uploadteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">上传</a>-->
+		<!--<a href="javascript:excelteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出</a>-->
+	</div>
+	<div id="admin">
+		日期：<input type="text" name="minDate" id="minDate" size="20"/>——<input type="text" name="maxDate" id="maxDate" size="20"/>
+		&nbsp;班级：&nbsp;<input type="text" name="classNum" id="classNum" size="20"/>
+		&nbsp;宿舍：&nbsp;<input class="text" id="Dnum" name="Dnum" size="20" />
+		<button class="easyui-linkbutton" iconCls="icon-search" plain="true" id="search" onclick="search()">搜索</button>
+	</div>
+	<div id="teacher">
+		日期：<input type="text" name="minDate2" id="minDate2" size="20"/>——<input type="text" name="maxDate2" id="maxDate2" size="20"/>
+		&nbsp;宿舍：&nbsp;<input class="text" id="Dnum2" name="Dnum2" size="20" />
+		<button class="easyui-linkbutton" iconCls="icon-search" plain="true" id="search2" onclick="search2()">搜索</button>
+	</div>
+	<div id="student">
+		日期：<input type="text" name="minDate2" id="minDate3" size="20"/>——<input type="text" name="maxDate3" id="maxDate3" size="20"/>
+		<button class="easyui-linkbutton" iconCls="icon-search" plain="true" id="search3" onclick="search3()">搜索</button>
+	</div>
+</div>
+<!--详情-->
+<div id="stuinfo">
+	<form id="form">
+	<table cellspacing="5px;">
+		<tr>
+			<td>班 级：</td>
+			<td>
+				<input type="hidden" id="tdsIda"/>
+				<input type="text" id="dormClassNuma" name="dormClassNuma" class="easyui-validatebox" readonly="readonly"/>
+			</td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>宿舍名：</td>
+			<td><input type="text" id="dormNuma" name="dormNuma" class="easyui-validatebox" readonly="readonly"/></td>
+		</tr>
+
+		<tr>
+			<td>日   期：</td>
+			<td><input type="text" id="tdsDatea" name="tdsDatea" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>评   分：</td>
+			<td><input type="text" id="tdsGradea" name="tdsGradea" class="easyui-validatebox"/></td>
+		</tr>
+		<tr>
+			<td valign="top">备注：</td>
+			<td colspan="4">
+				<textarea rows="7" cols="50" name="tdsEvaluatea" id="tdsEvaluatea"></textarea>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+
+<div id="dlg-button">
+	<a href="javascript:submit()" id="submit" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:close()" id="close" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+</body>
+</html>

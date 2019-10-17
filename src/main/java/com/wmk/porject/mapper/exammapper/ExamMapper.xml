@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.exammapper.ExamMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Exam" >
+    <id column="e_id" property="eId" jdbcType="VARCHAR" />
+    <result column="e_name" property="eName" jdbcType="VARCHAR" />
+    <result column="e_type" property="eType" jdbcType="VARCHAR" />
+    <result column="e_class" property="eClass" jdbcType="VARCHAR" />
+    <result column="e_datetime" property="eDatetime" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    e_id, e_name, e_type, e_class, e_datetime
+  </sql>
+  <select id="examList" resultType="com.wmk.porject.bean.Exam" parameterType="com.wmk.porject.bean.Exam" >
+    select
+    e_id eId, e_name eName, e_type, e_class eClass, e_datetime eDatetime
+    from t_exam
+    where 1=1
+    <if test="eClass!=null and ''!=eClass">
+      and e_class=#{eClass}
+    </if>
+    <if test="eName!=null and ''!=eName">
+      and e_name like CONCAT('%',#{eName,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="maxDate !=null and ''!=maxDate">
+      and e_datetime <![CDATA[<= ]]>#{maxDate}
+    </if>
+    <if test="minDate !=null and ''!=minDate">
+      and e_datetime <![CDATA[>= ]]>#{minDate}
+    </if>
+    order by e_datetime desc
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_exam
+    where e_id = #{eId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_exam
+    where e_id = #{eId,jdbcType=VARCHAR};
+    delete from t_score where s_exam_id=#{eId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Exam" >
+    insert into t_exam (e_id, e_name, e_type, 
+      e_class, e_datetime)
+    values (#{eId,jdbcType=VARCHAR}, #{eName,jdbcType=VARCHAR}, #{eType,jdbcType=VARCHAR}, 
+      #{eClass,jdbcType=VARCHAR}, #{eDatetime,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Exam" >
+    insert into t_exam
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="eId != null" >
+        e_id,
+      </if>
+      <if test="eName != null" >
+        e_name,
+      </if>
+      <if test="eType != null" >
+        e_type,
+      </if>
+      <if test="eClass != null" >
+        e_class,
+      </if>
+      <if test="eDatetime != null" >
+        e_datetime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="eId != null" >
+        #{eId,jdbcType=VARCHAR},
+      </if>
+      <if test="eName != null" >
+        #{eName,jdbcType=VARCHAR},
+      </if>
+      <if test="eType != null" >
+        #{eType,jdbcType=VARCHAR},
+      </if>
+      <if test="eClass != null" >
+        #{eClass,jdbcType=VARCHAR},
+      </if>
+      <if test="eDatetime != null" >
+        #{eDatetime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Exam" >
+    update t_exam
+    <set >
+      <if test="eName != null" >
+        e_name = #{eName,jdbcType=VARCHAR},
+      </if>
+      <if test="eType != null" >
+        e_type = #{eType,jdbcType=VARCHAR},
+      </if>
+      <if test="eClass != null" >
+        e_class = #{eClass,jdbcType=VARCHAR},
+      </if>
+      <if test="eDatetime != null" >
+        e_datetime = #{eDatetime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where e_id = #{eId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Exam" >
+    update t_exam
+    set e_name = #{eName,jdbcType=VARCHAR},
+      e_type = #{eType,jdbcType=VARCHAR},
+      e_class = #{eClass,jdbcType=VARCHAR},
+      e_datetime = #{eDatetime,jdbcType=VARCHAR}
+    where e_id = #{eId,jdbcType=VARCHAR}
+  </update>
+</mapper>

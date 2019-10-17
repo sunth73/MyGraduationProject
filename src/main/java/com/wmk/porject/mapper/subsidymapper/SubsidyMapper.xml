@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.subsidymapper.SubsidyMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Subsidy" >
+    <id column="tsu_id" property="tsuId" jdbcType="VARCHAR" />
+    <result column="tsu_star_date" property="tsuStarDate" jdbcType="VARCHAR" />
+    <result column="tsu_end_date" property="tsuEndDate" jdbcType="VARCHAR" />
+    <result column="tsu_subsidy" property="tsuSubsidy" jdbcType="VARCHAR" />
+    <result column="tsu_subsidy_code" property="tsuSubsidyCode" jdbcType="VARCHAR" />
+    <result column="tsu_state" property="tsuState" jdbcType="VARCHAR" />
+    <result column="tsu_num" property="tsuNum" jdbcType="VARCHAR" />
+    <result column="tsu_money" property="tsuMoney" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    tsu_id, tsu_star_date, tsu_end_date, tsu_subsidy, tsu_subsidy_code,tsu_state,tsu_num,tsu_money
+  </sql>
+  <select id="subsidylist" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_subsidy
+    <!--where 1=1-->
+    <!--<if test="currentDate != null and ''!=currentDate">-->
+      <!--and tsu_star_date <![CDATA[<=]]> #{currentDate}-->
+      <!--and tsu_end_date  <![CDATA[>=]]> #{currentDate}-->
+    <!--</if>-->
+  </select>
+  <select id="subsidylistforapplication" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_subsidy
+    where 1=1
+    and tsu_star_date <![CDATA[<=]]> current_date
+    and tsu_end_date  <![CDATA[>=]]> current_date
+  </select>
+
+  <select id="subsidylistByState" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    FROM t_subsidy ts
+    INNER JOIN t_subsidy_result r
+    ON r.ts_tsu_id!=ts.tsu_id
+    WHERE tsu_state='0'
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_subsidy
+    where tsu_id = #{tsuId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_subsidy
+    where tsu_id = #{tsuId,jdbcType=VARCHAR};
+    delete from t_subsidy_application
+    where t_tsu_id= #{tsuId,jdbcType=VARCHAR};
+    delete from t_subsidy_result
+     WHERE ts_tsu_id= #{tsuId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Subsidy" >
+    insert into t_subsidy (tsu_id, tsu_star_date, tsu_end_date, 
+      tsu_subsidy, tsu_subsidy_code)
+    values (#{tsuId,jdbcType=VARCHAR}, #{tsuStarDate,jdbcType=VARCHAR}, #{tsuEndDate,jdbcType=VARCHAR}, 
+      #{tsuSubsidy,jdbcType=VARCHAR}, #{tsuSubsidyCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Subsidy" >
+    insert into t_subsidy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tsuId != null" >
+        tsu_id,
+      </if>
+      <if test="tsuStarDate != null" >
+        tsu_star_date,
+      </if>
+      <if test="tsuEndDate != null" >
+        tsu_end_date,
+      </if>
+      <if test="tsuSubsidy != null" >
+        tsu_subsidy,
+      </if>
+      <if test="tsuSubsidyCode != null" >
+        tsu_subsidy_code,
+      </if>
+      <if test="tsuState != null" >
+        tsu_state,
+      </if>
+      <if test="tsuNum != null" >
+        tsu_num,
+      </if>
+      <if test="tsuMoney != null" >
+        tsu_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tsuId != null" >
+        #{tsuId,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuStarDate != null" >
+        #{tsuStarDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuEndDate != null" >
+        #{tsuEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuSubsidy != null" >
+        #{tsuSubsidy,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuSubsidyCode != null" >
+        #{tsuSubsidyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuState != null" >
+        #{tsuState,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuNum != null" >
+        #{tsuNum},
+      </if>
+      <if test="tsuMoney != null" >
+        #{tsuMoney},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Subsidy" >
+    update t_subsidy
+    <set >
+      <if test="tsuStarDate != null" >
+        tsu_star_date = #{tsuStarDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuEndDate != null" >
+        tsu_end_date = #{tsuEndDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuSubsidy != null" >
+        tsu_subsidy = #{tsuSubsidy,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuSubsidyCode != null" >
+        tsu_subsidy_code = #{tsuSubsidyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuState != null" >
+        tsu_state = #{tsuState,jdbcType=VARCHAR},
+      </if>
+      <if test="tsuNum != null" >
+       tsu_num= #{tsuNum},
+      </if>
+      <if test="tsuMoney != null" >
+        tsu_money=#{tsuMoney}
+      </if>
+    </set>
+    where tsu_id = #{tsuId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Subsidy" >
+    update t_subsidy
+    set tsu_star_date = #{tsuStarDate,jdbcType=VARCHAR},
+      tsu_end_date = #{tsuEndDate,jdbcType=VARCHAR},
+      tsu_subsidy = #{tsuSubsidy,jdbcType=VARCHAR},
+      tsu_subsidy_code = #{tsuSubsidyCode,jdbcType=VARCHAR}
+    where tsu_id = #{tsuId,jdbcType=VARCHAR}
+  </update>
+  <select id="subsidylistforlist" resultType="com.wmk.porject.bean.Subsidy" parameterType="com.wmk.porject.bean.Subsidy">
+    select
+    tsu_id tsuId, tsu_star_date tsuStarDate, tsu_end_date tsuEndDate, tsu_subsidy tsuSubsidy,
+    tsu_subsidy_code tsuSubsidyCode,
+    case tsu_state when '0' then '正常' when '1' then '结束' end tsuState,
+    tsu_num tsuNum,tsu_money tsuMoney
+    from t_subsidy
+    where 1=1
+    <if test="tsuSubsidy!=null and ''!=tsuSubsidy">
+      and tsu_subsidy like CONCAT('%',#{tsuSubsidy,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="tsuSubsidyCode!=null and ''!=tsuSubsidyCode">
+      and tsu_subsidy_code =#{tsuSubsidyCode}
+    </if>
+    <if test="tsuState!=null and ''!=tsuState">
+      and tsu_state =#{tsuState}
+    </if>
+  </select>
+</mapper>

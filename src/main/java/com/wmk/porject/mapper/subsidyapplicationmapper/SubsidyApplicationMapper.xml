@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.subsidyapplicationmapper.SubsidyApplicationMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.SubsidyApplication" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="t_stu_card_num" property="tStuCardNum" jdbcType="VARCHAR" />
+    <result column="t_application_date" property="tApplicationDate" jdbcType="VARCHAR" />
+    <result column="t_describe" property="tDescribe" jdbcType="VARCHAR" />
+    <result column="t_grade" property="tGrade" jdbcType="VARCHAR" />
+    <result column="t_class_num" property="tClassNum" jdbcType="VARCHAR" />
+    <result column="t_tsu_id" property="tTsuId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, t_stu_card_num, t_application_date, t_describe, t_grade, t_class_num, t_tsu_id
+  </sql>
+  <select id="subsidyappRanking" resultType="com.wmk.porject.bean.SubsidyApplication" parameterType="java.lang.String" >
+    SELECT
+    id id, t_stu_card_num tStuCardNum, t_application_date tApplicationDate, t_describe tDescribe,
+    IFNULL(t_grade,'0')  tGrade,
+    t_class_num tClassNum, t_tsu_id tTsuId,ts.stu_name stuName
+    FROM t_subsidy_application t
+    LEFT JOIN t_student ts ON ts.stu_card_num=t.t_stu_card_num
+    where t_tsu_id = #{tTsuId,jdbcType=VARCHAR}
+    <if test="tClassNum!=null">
+      and t_class_num=#{tClassNum}
+    </if>
+    order by t_grade desc
+  </select>
+  <select id="subsidyappList" resultType="com.wmk.porject.bean.SubsidyApplication" parameterType="java.lang.String" >
+    SELECT
+    id id, t_stu_card_num tStuCardNum, t_application_date tApplicationDate, t_describe tDescribe,
+    IFNULL(t_grade,'0')  tGrade,
+     t_class_num tClassNum, t_tsu_id tTsuId,ts.stu_name stuName
+    FROM t_subsidy_application t
+    LEFT JOIN t_student ts ON ts.stu_card_num=t.t_stu_card_num
+    where t_tsu_id = #{tTsuId,jdbcType=VARCHAR}
+    <if test="tClassNum!=null">
+      and t_class_num=#{tClassNum}
+    </if>
+    order by t_grade desc
+  </select>
+  <select id="selectBytTsuIdAndtStuCardNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_subsidy_application
+    where t_tsu_id = #{tTsuId,jdbcType=VARCHAR}
+    and t_stu_card_num = #{tStuCardNum,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_subsidy_application
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_subsidy_application
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.SubsidyApplication" >
+    insert into t_subsidy_application (id, t_stu_card_num, t_application_date, 
+      t_describe, t_grade, t_class_num, 
+      t_tsu_id)
+    values (#{id,jdbcType=VARCHAR}, #{tStuCardNum,jdbcType=VARCHAR}, #{tApplicationDate,jdbcType=VARCHAR}, 
+      #{tDescribe,jdbcType=VARCHAR}, #{tGrade,jdbcType=VARCHAR}, #{tClassNum,jdbcType=VARCHAR}, 
+      #{tTsuId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.SubsidyApplication" >
+    insert into t_subsidy_application
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tStuCardNum != null" >
+        t_stu_card_num,
+      </if>
+      <if test="tApplicationDate != null" >
+        t_application_date,
+      </if>
+      <if test="tDescribe != null" >
+        t_describe,
+      </if>
+      <if test="tGrade != null" >
+        t_grade,
+      </if>
+      <if test="tClassNum != null" >
+        t_class_num,
+      </if>
+      <if test="tTsuId != null" >
+        t_tsu_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="tStuCardNum != null" >
+        #{tStuCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="tApplicationDate != null" >
+        #{tApplicationDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tDescribe != null" >
+        #{tDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="tGrade != null" >
+        #{tGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="tClassNum != null" >
+        #{tClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="tTsuId != null" >
+        #{tTsuId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.SubsidyApplication" >
+    update t_subsidy_application
+    <set >
+      <if test="tStuCardNum != null" >
+        t_stu_card_num = #{tStuCardNum,jdbcType=VARCHAR},
+      </if>
+      <if test="tApplicationDate != null" >
+        t_application_date = #{tApplicationDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tDescribe != null" >
+        t_describe = #{tDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="tGrade != null" >
+        t_grade = #{tGrade,jdbcType=VARCHAR},
+      </if>
+      <if test="tClassNum != null" >
+        t_class_num = #{tClassNum,jdbcType=VARCHAR},
+      </if>
+      <if test="tTsuId != null" >
+        t_tsu_id = #{tTsuId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.SubsidyApplication" >
+    update t_subsidy_application
+    set t_stu_card_num = #{tStuCardNum,jdbcType=VARCHAR},
+      t_application_date = #{tApplicationDate,jdbcType=VARCHAR},
+      t_describe = #{tDescribe,jdbcType=VARCHAR},
+      t_grade = #{tGrade,jdbcType=VARCHAR},
+      t_class_num = #{tClassNum,jdbcType=VARCHAR},
+      t_tsu_id = #{tTsuId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="newlist" resultType="com.wmk.porject.bean.SubsidyApplication" parameterType="java.lang.String" >
+    SELECT
+    id id, t_stu_card_num tStuCardNum, t_application_date tApplicationDate, t_describe tDescribe,
+    IFNULL(t_grade,'0')  tGrade,
+    t_class_num tClassNum, t_tsu_id tTsuId,ts.stu_name stuName
+    FROM t_subsidy_application t
+    LEFT JOIN t_student ts ON ts.stu_card_num=t.t_stu_card_num
+    WHERE (SELECT COUNT(1) FROM t_subsidy_application t1
+    WHERE t1.t_class_num=t.t_class_num AND t1.t_grade <![CDATA[> ]]>t.t_grade) <![CDATA[< ]]>#{num}
+    and t_tsu_id=#{tTsuId}
+  </select>
+</mapper>

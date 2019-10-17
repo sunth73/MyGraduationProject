@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.worklogmapper.WorkLogMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.WorkLog" >
+    <id column="t_id" property="tId" jdbcType="VARCHAR" />
+    <result column="log_type" property="logType" jdbcType="VARCHAR" />
+    <result column="log_date" property="logDate" jdbcType="DATE" />
+    <result column="log_value" property="logValue" jdbcType="VARCHAR" />
+    <result column="log_user_id" property="logUserId" jdbcType="VARCHAR" />
+    <result column="log_flag" property="logFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    t_id, log_type, log_date, log_value, log_user_id,log_flag
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_work_log
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_work_log
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.WorkLog" >
+    insert into t_work_log (t_id, log_type, log_date, 
+      log_value, log_user_id)
+    values (#{tId,jdbcType=VARCHAR}, #{logType,jdbcType=VARCHAR}, #{logDate,jdbcType=DATE}, 
+      #{logValue,jdbcType=VARCHAR}, #{logUserId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.WorkLog" >
+    insert into t_work_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tId != null" >
+        t_id,
+      </if>
+      <if test="logType != null" >
+        log_type,
+      </if>
+      <if test="logDate != null" >
+        log_date,
+      </if>
+      <if test="logValue != null" >
+        log_value,
+      </if>
+      <if test="logUserId != null" >
+        log_user_id,
+      </if>
+      <if test="logFlag != null" >
+        log_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tId != null" >
+        #{tId,jdbcType=VARCHAR},
+      </if>
+      <if test="logType != null" >
+        #{logType,jdbcType=VARCHAR},
+      </if>
+      <if test="logDate != null" >
+        #{logDate,jdbcType=DATE},
+      </if>
+      <if test="logValue != null" >
+        #{logValue,jdbcType=VARCHAR},
+      </if>
+      <if test="logUserId != null" >
+        #{logUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="logFlag != null" >
+        #{logFlag}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.WorkLog" >
+    update t_work_log
+    <set >
+      <if test="logType != null" >
+        log_type = #{logType,jdbcType=VARCHAR},
+      </if>
+      <if test="logDate != null" >
+        log_date = #{logDate,jdbcType=DATE},
+      </if>
+      <if test="logValue != null" >
+        log_value = #{logValue,jdbcType=VARCHAR},
+      </if>
+      <if test="logUserId != null" >
+        log_user_id = #{logUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="logFlag != null" >
+        log_flag=#{logFlag},
+      </if>
+    </set>
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.WorkLog" >
+    update t_work_log
+    set log_type = #{logType,jdbcType=VARCHAR},
+      log_date = #{logDate,jdbcType=DATE},
+      log_value = #{logValue,jdbcType=VARCHAR},
+      log_user_id = #{logUserId,jdbcType=VARCHAR}
+    where t_id = #{tId,jdbcType=VARCHAR}
+  </update>
+  <select id="logList" resultType="com.wmk.porject.bean.WorkLog" parameterType="com.wmk.porject.bean.WorkLog" >
+    select
+    t_id tId,
+    case log_type when '0' then '日报' when '1' then '周报' when '2' then '月报' else '错误数据'  end logType, log_date logDate, log_value logValue,
+    log_user_id logUserId,
+    case log_flag when '0' then '未填写' when '1' then '已保存' when '2' then '已提交' else '错误数据' end flag,
+    log_flag logFlag
+    from t_work_log
+    where log_user_id = #{logUserId,jdbcType=VARCHAR}
+    <if test="logType!=null and ''!=logType">
+     and log_type = #{logType,jdbcType=VARCHAR}
+    </if>
+    <if test="logFlag!=null and ''!=logFlag">
+      and log_flag=#{logFlag}
+    </if>
+    <if test="maxDate !=null and ''!=maxDate">
+      and log_date <![CDATA[<= ]]>#{maxDate}
+    </if>
+    <if test="minDate !=null and ''!=minDate">
+      and log_date <![CDATA[>= ]]>#{minDate}
+    </if>
+    order by log_date desc
+  </select>
+</mapper>

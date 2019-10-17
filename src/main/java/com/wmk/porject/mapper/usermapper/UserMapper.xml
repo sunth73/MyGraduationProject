@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.usermapper.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.User" >
+    <id column="userId" property="userid" jdbcType="INTEGER" />
+    <result column="userName" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="userType" property="usertype" jdbcType="TINYINT" />
+    <result column="roleId" property="roleid" jdbcType="INTEGER" />
+    <result column="userDescription" property="userdescription" jdbcType="VARCHAR" />
+    <result column="userMail" property="usermail" jdbcType="VARCHAR" />
+    <result column="userPhone" property="userphone" jdbcType="VARCHAR" />
+    <result column="empname" property="empname" jdbcType="VARCHAR" />
+    <result column="flag" property="flag" jdbcType="VARCHAR" />
+    <result column="creator" property="creator" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userId, userName, password, userType, roleId, userDescription, userMail, userPhone, 
+    empname, flag, creator, createTime, updateTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where userId = #{userid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_user
+    where userId = #{userid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.User" >
+    insert into t_user (userId, userName, password, 
+      userType, roleId, userDescription, 
+      userMail, userPhone, empname, 
+      flag, creator, createTime, 
+      updateTime)
+    values (#{userid,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{usertype,jdbcType=TINYINT}, #{roleid,jdbcType=INTEGER}, #{userdescription,jdbcType=VARCHAR}, 
+      #{usermail,jdbcType=VARCHAR}, #{userphone,jdbcType=VARCHAR}, #{empname,jdbcType=VARCHAR}, 
+      #{flag,jdbcType=VARCHAR}, #{creator,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{updatetime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.User" >
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="username != null" >
+        userName,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="usertype != null" >
+        userType,
+      </if>
+      <if test="roleid != null" >
+        roleId,
+      </if>
+      <if test="userdescription != null" >
+        userDescription,
+      </if>
+      <if test="usermail != null" >
+        userMail,
+      </if>
+      <if test="userphone != null" >
+        userPhone,
+      </if>
+      <if test="empname != null" >
+        empname,
+      </if>
+      <if test="flag != null" >
+        flag,
+      </if>
+      <if test="creator != null" >
+        creator,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="usertype != null" >
+        #{usertype,jdbcType=TINYINT},
+      </if>
+      <if test="roleid != null" >
+        #{roleid,jdbcType=INTEGER},
+      </if>
+      <if test="userdescription != null" >
+        #{userdescription,jdbcType=VARCHAR},
+      </if>
+      <if test="usermail != null" >
+        #{usermail,jdbcType=VARCHAR},
+      </if>
+      <if test="userphone != null" >
+        #{userphone,jdbcType=VARCHAR},
+      </if>
+      <if test="empname != null" >
+        #{empname,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.User" >
+    update t_user
+    <set >
+      <if test="username != null" >
+        userName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="usertype != null" >
+        userType = #{usertype,jdbcType=TINYINT},
+      </if>
+      <if test="roleid != null" >
+        roleId = #{roleid,jdbcType=INTEGER},
+      </if>
+      <if test="userdescription != null" >
+        userDescription = #{userdescription,jdbcType=VARCHAR},
+      </if>
+      <if test="usermail != null" >
+        userMail = #{usermail,jdbcType=VARCHAR},
+      </if>
+      <if test="userphone != null" >
+        userPhone = #{userphone,jdbcType=VARCHAR},
+      </if>
+      <if test="empname != null" >
+        empname = #{empname,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        creator = #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where userId = #{userid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.User" >
+    update t_user
+    set userName = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      userType = #{usertype,jdbcType=TINYINT},
+      roleId = #{roleid,jdbcType=INTEGER},
+      userDescription = #{userdescription,jdbcType=VARCHAR},
+      userMail = #{usermail,jdbcType=VARCHAR},
+      userPhone = #{userphone,jdbcType=VARCHAR},
+      empname = #{empname,jdbcType=VARCHAR},
+      flag = #{flag,jdbcType=VARCHAR},
+      creator = #{creator,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where userId = #{userid,jdbcType=INTEGER}
+  </update>
+  <!--登录查询-->
+  <select id="selectForLogin" parameterType="java.lang.String" resultType="com.wmk.porject.bean.User">
+    select userId userid, userName username, password password, userType usertype, t.roleId roleid,
+     userDescription userdescription, userMail usermail, userPhone userphone,
+    empname empname, flag flag,r.roleName rolename
+    from t_user t inner join t_role r
+    on r.roleId=t.roleId
+     where t.userName=#{loginName} or t.userMail=#{loginName} or t.userPhone=#{loginName}
+  </select>
+  <select id="userList" parameterType="com.wmk.porject.bean.User" resultType="com.wmk.porject.bean.User">
+    SELECT
+    userId userid, userName username, PASSWORD PASSWORD, userType usertype, r.roleId roleid,
+    userDescription userdescription, userMail usermail, userPhone userphone,
+    empname empname, flag flag, GROUP_CONCAT(r.roleName)  rolename,GROUP_CONCAT(tur.role_id)  roleIds
+    FROM t_user u
+    INNER JOIN t_user_role tur ON tur.user_id=u.userId
+    INNER JOIN t_role r ON r.roleId=tur.role_id
+    WHERE u.userType!=1
+    <if test="roleid != null" >
+      and tur.role_id = #{roleid,jdbcType=INTEGER}
+    </if>
+    <if test="empname != null" >
+      and empname like CONCAT('%',#{empname,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="userid != null and ''!=userid" >
+      and userId !=#{userid}
+    </if>
+    GROUP BY userId
+  </select>
+  <select id="selectUserName" parameterType="java.lang.String" resultType="java.lang.String">
+    select userName from t_user
+    where userName like CONCAT(#{username,jdbcType=VARCHAR},'%')
+  </select>
+  <!--同步更新-->
+  <update id="updateByEmpname" parameterType="com.wmk.porject.bean.User" >
+    update t_user
+    <set >
+      <if test="empname != null" >
+        empname = #{empname,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="usertype != null" >
+        userType = #{usertype,jdbcType=TINYINT},
+      </if>
+      <if test="roleid != null" >
+        roleId = #{roleid,jdbcType=INTEGER},
+      </if>
+      <if test="userdescription != null" >
+        userDescription = #{userdescription,jdbcType=VARCHAR},
+      </if>
+      <if test="usermail != null" >
+        userMail = #{usermail,jdbcType=VARCHAR},
+      </if>
+      <if test="userphone != null" >
+        userPhone = #{userphone,jdbcType=VARCHAR},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null" >
+        creator = #{creator,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  userName = #{username,jdbcType=VARCHAR}
+  </update>
+  <!--同步删除学生-->
+  <delete id="deleteforUserStu"  >
+    delete from t_student
+    where stu_uname = #{param1};
+    delete from t_user
+     where userId = #{param2};
+  </delete>
+  <!--同步删除教师-->
+  <delete id="deleteforUserTea"  >
+    delete from t_teacher
+    where tea_login_name = #{param1};
+    delete from t_user
+     where userId = #{param2};
+  </delete>
+  <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_user
+    where userName = #{username}
+  </select>
+  <select id="userInformation" parameterType="java.lang.Integer" resultType="com.wmk.porject.bean.User">
+    SELECT
+    userId userid, userName username, PASSWORD PASSWORD, userType usertype, r.roleId roleid,
+    userDescription userdescription, userMail usermail, userPhone userphone,
+    empname empname, flag flag, GROUP_CONCAT(r.roleName)  rolename,GROUP_CONCAT(tur.role_id)  roleIds
+    FROM t_user u
+    INNER JOIN t_user_role tur ON tur.user_id=u.userId
+    INNER JOIN t_role r ON r.roleId=tur.role_id
+    WHERE
+     userId =#{userid}
+    GROUP BY userId
+  </select>
+</mapper>

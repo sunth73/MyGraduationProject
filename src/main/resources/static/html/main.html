@@ -1,0 +1,258 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>系统主界面</title><link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/student.css">
+	<script src="../js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+	<script type="text/javascript" src="../utiljs/dateUtil.js"></script>
+<script type="text/javascript">
+	$(function(){
+	    if(sessionStorage.getItem("loginUser")==undefined){
+            window.location.href = "../html/login.html";
+		}
+        init();
+        currentUser = JSON.parse(sessionStorage.getItem("loginUser"));
+        // alert(currentUser.roleIds);
+        // if(currentUser.roleIds.indexOf("A")!=-1){
+        //     //等于-1表示这个字符串中没有o这个字符
+        //     alert("bbbbbbb");
+        // }else if(currentUser.roleIds.indexOf("5")!=-1){
+		// 	alert("aaaaa")
+        // }
+        $("#empname").html(currentUser.empname);
+        $("#rolename").html(currentUser.rolename);
+        var message={
+            parentid:-1
+		}
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/auth/getmenu",message);
+
+        // console.log(msg);
+        $("#tree").tree({
+            lines:true,
+			data: msg,
+            onLoadSuccess:function(){
+                $("#tree").tree('expandAll');
+            },
+            onClick:function(node){
+                if(node.id==101){
+                    logout();
+                }else if(node.id==100){
+                    openPasswordModifyDialog();
+                }else　if(node.attributes.authPath){
+                    openTab(node);
+                }
+            }
+        });
+		
+		function logout(){
+			$.messager.confirm('系统提示','您确定要退出系统吗？',function(r){
+				if(r){
+                    sessionStorage.removeItem("loginUser");
+                    window.location.href = "../html/login.html";
+				}
+			});
+		}
+		
+		function openPasswordModifyDialog(){
+            $('#dlg').dialog({
+                title: '修改密码',
+                width: 600,
+                height: 450,
+                closed: false,
+                cache: false,
+                modal: true,
+                buttons:"#dlg-buttons",
+                onOpen:function () {
+                    $("#userId").val(currentUser.userid);
+                    $("#userName").val(currentUser.empname);
+                },
+                /*
+                * 修改后后刷新页面
+                * */
+                onClose:function () {
+
+                }
+            });
+		}
+		
+		function openTab(node){
+            // alert(JSON.stringify(node));
+			if($("#tabs").tabs("exists",node.text)){
+				$("#tabs").tabs("select",node.text);
+			}else{
+				var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:100%' src="+node.attributes.authPath+"></iframe>"
+				$("#tabs").tabs("add",{
+					title:node.text,
+					iconCls:node.iconCls,
+					closable:true,
+					content:content
+				});
+			}
+		}
+		/*展示公告*/
+        var message={
+
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/notice/list",message);
+        $("#notice").html(msg.body[0].text);
+        $("#noticename").html(msg.body[0].creatorName);
+        $("#noticedate").html(timestampToTime(msg.body[0].createTime));
+        /*展示留言*/
+        var message1={
+
+        }
+        var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/news/list",message1);
+		$("#newss").html(msg1.body[0].news);newssender
+        $("#newssender").html(msg1.body[0].userName);
+	});
+
+    function init(){
+        currentUser = JSON.parse(sessionStorage.getItem("loginUser"));
+        // if(currentUser.roleid==1||currentUser.roleid==2||currentUser.roleid==4||currentUser.roleid==9){
+        if(currentUser.roleIds.indexOf("1")!=-1||currentUser.roleIds.indexOf("2")!=-1||currentUser.roleIds.indexOf("4")!=-1||currentUser.roleIds.indexOf("9")!=-1){
+            $("#news").show();
+            var mess={};
+            var ms= jQuery.fn.commonPlugin.commonAjaxJson("/news/newsnum",mess);
+            $("#news").html(ms.body);
+        }else{
+            $("#news").hide();
+        }
+    }
+	function modifyPassword(){
+        debugger;
+        var oldPassword=$("#oldPassword").val();
+        var newPassword=$("#newPassword").val();
+        var newPassword2=$("#newPassword2").val();
+        if(!$(this).form("validate")){
+            return false;
+        }
+        if(oldPassword!=currentUser.password){
+            $.messager.alert('系统提示','原密码输入错误！');
+            return false;
+        }
+        if(newPassword!=newPassword2){
+            $.messager.alert('系统提示','确认密码输入错误！');
+            return false;
+        }
+        var message={
+			"userid":$("#userId").val(),
+			"password":oldPassword,
+			"newPassword":newPassword
+		}
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/user/updatePwd",message);
+        $("#dlg").dialog("close");
+        if(msg.header.resultCode=='0'){
+            $.messager.alert('提示','密码修改成功,即将跳转登录页。。。。。');
+            setTimeout( function(){
+                window.location.href = "../html/login.html";
+            }, 3 * 1000 )
+        }else {
+            $.messager.alert('提示','密码修改失败');
+        }
+	}
+	
+	function closePasswordModifyDialog(){
+		$("#dlg").dialog("close");
+		$("#oldPassword").val("");
+		$("#newPassword").val("");
+		$("#newPassword2").val("");
+	}
+    function news(){
+        var nodes={"id":37,"text":"留言列表","iconCls":"icon-item","attributes":{"authPath":"news.html"},"target":{},"checked":false};
+        if($("#tabs").tabs("exists",nodes.text)){
+            $("#tabs").tabs("select",nodes.text);
+        }else{
+            var content="<iframe frameborder=0 scrolling='auto' style='width:100%;height:100%' src="+nodes.attributes.authPath+"></iframe>"
+            $("#tabs").tabs("add",{
+                title:nodes.text,
+                iconCls:nodes.iconCls,
+                closable:true,
+                content:content
+            });
+        }
+    }
+</script>
+</head>
+<body class="easyui-layout">
+<div region="north" style="height: 68px;">
+<div style="padding: 0px;margin: 0px;background-color: #E0ECFF;">
+	<table>
+		<tr>
+			<td><img src="../images/mainlogo.png"/></td>
+			<td valign="bottom"><span id="empname"></span> &nbsp;『<span id="rolename"></span>』</td>
+			<td style="padding-top: 35px"><a href="javascript:news()" class="easyui-linkbutton" iconCls="icon-news" plain="true">
+				<span id="news" style="color: red"></span>
+			</a></td>
+		</tr>
+	</table>
+
+</div>
+</div>
+<div region="center">
+	<div class="easyui-tabs" fit="true" border="false" id="tabs">
+		<div title="首页" data-options="iconCls:'icon-home'">
+			<div class="info" id="stu" style="margin-top: 5%;margin-left: 10%">
+				<p style="padding: 10px;font-size: 30px;color: red">欢迎使用本系统</p>
+				<p style="padding: 10px"><HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3></p>
+				<p style="padding: 10px; font-size: 25px;color: red">最新通知</p>
+				<p style="padding: 10px;">
+					<div style="font-size: 16px;color: red;width: 1265px" id="notice">
+						暂无公告
+					</div>
+				</p>
+				<p style="padding: 5px;margin-left: 60%">发布者：<span id="noticename"></span>&nbsp;&nbsp;发布日期：<span id="noticedate"></span></p>
+				<p style="padding: 10px"><HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#987cb9 SIZE=3></p>
+				<p style="padding: 10px; font-size: 25px;color: red">最新留言</p>
+				<p style="padding: 10px;">
+				<div style="font-size: 16px;color: red;width: 1265px" id="newss">
+					暂无新留言
+				</div>
+				<p style="padding: 5px;margin-left: 60%">&nbsp;&nbsp;发送者：<span id="newssender"></span></p>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+<div region="west" style="width: 160px;padding: 5px;" title="导航菜单" split="true">
+<ul id="tree" class="easyui-tree"></ul>
+</div>
+<div region="south" style="height: 25px;padding: 5px;" align="center">
+	毕设专用 2019
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width: 400px;height: 220px;padding: 10px 20px" 
+ closed="true" buttons="#dlg-buttons" data-options="iconCls:'icon-modifyPassword'">
+ <form id="fm" method="post">
+ 	<table cellspacing="4px;">
+ 		<tr>
+ 			<td>用户名：</td>
+ 			<td><input type="hidden" name="userId" id="userId" >
+				<input type="text" name="userName" id="userName" readonly="readonly" style="width: 200px;" /></td>
+ 		</tr>
+ 		<tr>
+ 			<td>原密码：</td>
+ 			<td><input type="password" class="easyui-validatebox" name="oldPassword" id="oldPassword" style="width: 200px;" required="true" /></td>
+ 		</tr>
+ 		<tr>
+ 			<td>新密码：</td>
+ 			<td><input type="password" class="easyui-validatebox" name="newPassword" id="newPassword" style="width: 200px;" required="true"  /></td>
+ 		</tr>
+ 		<tr>
+ 			<td>确认新密码：</td>
+ 			<td><input type="password" class="easyui-validatebox" name="newPassword2" id="newPassword2" style="width: 200px;" required="true" /></td>
+ 		</tr>
+ 	</table>
+ </form>
+</div>
+<div id="dlg-buttons">
+	<a href="javascript:modifyPassword()" class="easyui-linkbutton" iconCls="icon-ok">保存</a>
+	<a href="javascript:closePasswordModifyDialog()" class="easyui-linkbutton" iconCls="icon-cancel">关闭</a>
+</div>
+</body>
+</html>

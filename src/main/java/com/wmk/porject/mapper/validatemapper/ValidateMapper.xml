@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.validatemapper.ValidateMapper" >
+  <!-- 查重 -->
+  <select id="duplicateChecking" statementType="STATEMENT" parameterType="java.lang.String" resultType="java.lang.String">
+    select ${columnName} from ${tableName}
+    where ${columnName}=${dateValue}
+    <if test="tableIdName != null and '' != tableIdName ">
+      and ${tableIdName}!=${tableIdValue}
+    </if>
+  </select>
+</mapper>

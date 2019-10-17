@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.newsresponsemapper.NewsResponseMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.NewsResponse" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="news" property="news" jdbcType="VARCHAR" />
+    <result column="t_date" property="tDate" jdbcType="TIMESTAMP" />
+    <result column="send_id" property="sendId" jdbcType="INTEGER" />
+    <result column="receive_id" property="receiveId" jdbcType="INTEGER" />
+    <result column="is_show" property="isShow" jdbcType="VARCHAR" />
+    <result column="news_id" property="newsId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, news, t_date, send_id, receive_id, is_show, news_id
+  </sql>
+  <select id="selectByNewsId" resultType="com.wmk.porject.bean.NewsResponse" parameterType="java.lang.String" >
+    SELECT tn.id id, tn.news news, tn.t_date tDate, tn.send_id sendId, tn.receive_id receiveId, tn.is_show isShow, tn.news_id newsId,
+    tu.empname sendName
+    FROM t_news_response tn
+    INNER JOIN t_user tu ON tu.userId=tn.send_id
+    where news_id = #{newsId,jdbcType=VARCHAR}
+    order by t_date desc
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_news_response
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_news_response
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.NewsResponse" >
+    insert into t_news_response (id, news, t_date, 
+      send_id, receive_id, is_show, 
+      news_id)
+    values (#{id,jdbcType=VARCHAR}, #{news,jdbcType=VARCHAR}, #{tDate,jdbcType=TIMESTAMP}, 
+      #{sendId,jdbcType=INTEGER}, #{receiveId,jdbcType=INTEGER}, #{isShow,jdbcType=VARCHAR}, 
+      #{newsId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.NewsResponse" >
+    insert into t_news_response
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="news != null" >
+        news,
+      </if>
+      <if test="tDate != null" >
+        t_date,
+      </if>
+      <if test="sendId != null" >
+        send_id,
+      </if>
+      <if test="receiveId != null" >
+        receive_id,
+      </if>
+      <if test="isShow != null" >
+        is_show,
+      </if>
+      <if test="newsId != null" >
+        news_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="news != null" >
+        #{news,jdbcType=VARCHAR},
+      </if>
+      <if test="tDate != null" >
+        #{tDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendId != null" >
+        #{sendId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveId != null" >
+        #{receiveId,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null" >
+        #{isShow,jdbcType=VARCHAR},
+      </if>
+      <if test="newsId != null" >
+        #{newsId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.NewsResponse" >
+    update t_news_response
+    <set >
+      <if test="news != null" >
+        news = #{news,jdbcType=VARCHAR},
+      </if>
+      <if test="tDate != null" >
+        t_date = #{tDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendId != null" >
+        send_id = #{sendId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveId != null" >
+        receive_id = #{receiveId,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null" >
+        is_show = #{isShow,jdbcType=VARCHAR},
+      </if>
+      <if test="newsId != null" >
+        news_id = #{newsId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.NewsResponse" >
+    update t_news_response
+    set news = #{news,jdbcType=VARCHAR},
+      t_date = #{tDate,jdbcType=TIMESTAMP},
+      send_id = #{sendId,jdbcType=INTEGER},
+      receive_id = #{receiveId,jdbcType=INTEGER},
+      is_show = #{isShow,jdbcType=VARCHAR},
+      news_id = #{newsId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

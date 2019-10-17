@@ -1,0 +1,599 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>学生信息管理</title>
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../jquery-easyui-1.3.3/demo/demo.css">
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../jquery-easyui-1.3.3/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../commAjax/commAjax.js"></script>
+<script type="text/javascript" src="../utiljs/dateUtil.js"></script>
+<script type="text/javascript" src="../validate/validate.js"></script>
+<script type="text/javascript" src="json/nation.js"></script>
+<script type="text/javascript" src="json/policital.js"></script>
+<script type="text/javascript">
+	var flag="0";//判断模态框用途(添加/修改)
+	var resultNum="";
+	/*
+	* 初始化加载数据
+	* */
+	$(function(){
+	    debugger;
+	    var message={
+			"teaName":$("#tname").val()
+			// "teaCalss":$("#tname").val()
+		}
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+        $('#dg').datagrid({
+            data:msg.body,
+            singleSelect:true,
+            title:'教师管理',
+            fitColumns:true,
+            // pagination:true,
+			rownumbers:true,
+			fit:true,
+			toolbar:"#tb",
+            columns:[[
+                {checkbox: true},
+                {field:'teaName',title:'姓名',width:100,align:'center'},
+                {field:'teaSex',title:'性别',width:100,align:'center'},
+                {field:'teaCalss',title:'班级',width:100,align:'center'},
+                {field:'teaClassNum',title:'班级人数',width:100,align:'center'},
+                {field:'teaCardNum',title:'工号',width:100,align:'center'},
+                {field:'teaPhone',title:'手机号',width:100,align:'center'},
+                {field:'operate',title:'操作',align:'center',width:80,
+                    formatter:function(value, row, index){
+                        var str = '<a href="#" name="opera" class="easyui-linkbutton" onclick="stuInfo('+row.teaId+')"></a>';
+                        return str;
+                    }}
+            ]],
+            onLoadSuccess:function(data){
+                $("a[name='opera']").linkbutton({text:'查看详情',plain:true,iconCls:'icon-add'});
+            }
+        });
+	});
+	/*条件搜索*/
+    function search () {
+        var message={
+            "teaName":$("#tname").val()
+			// "teaCalss":
+        }
+        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+        $('#dg').datagrid({
+            data: msg.body
+        });
+    };
+    /*查看详情*/
+    function stuInfo(teaId) {
+        $('#teainfo').dialog({
+            title: '教师信息详情',
+            width: 600,
+            height: 400,
+            closed: false,
+            cache: false,
+            modal: true,
+			onOpen:function () {
+				var message={
+					"teaId":teaId
+				}
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/teainfo",message);
+                var mes={
+                    "tcClassNum":msg.body.teaCalss
+                }
+                var mesg=jQuery.fn.commonPlugin.commonAjaxJson("/tclass/selectGradeNum",mes);
+				$("#teaName").val(msg.body.teaName);
+                $("#teaLoginName").val(msg.body.teaLoginName);
+                $("#teaCalss").val(msg.body.teaCalss);
+                $("#grade").val(mesg.body[0].tcGradeNum);
+                $("#teaCardNum").val(msg.body.teaCardNum);
+                $("#teaSex").val(msg.body.teaSex);
+                $("#teaSubject").val(msg.body.teaSubject);
+                $("#teaPolicital").val(msg.body.teaPolicital);
+                $("#teaPhone").val(msg.body.teaPhone);
+                $("#teaQq").val(msg.body.teaQq);
+                $("#teaWchart").val(msg.body.teaWchart);
+                $("#teaUniversity").val(msg.body.teaUniversity);
+                $("#teaEducation").val(msg.body.teaEducation);
+                $("#teaAddress").val(msg.body.teaAddress);
+                $("#teaMail").val(msg.body.teaMail);
+                $("#cardNums").val(msg.body.teaPeopleCard);
+            }
+        })
+    }
+    /**
+	 * 添加--添加框
+     */
+    function addteacher() {
+        flag=1;
+        $('#dlg').dialog({
+
+            title: '添加教师',
+            width: 600,
+            height: 450,
+            closed: false,
+            cache: false,
+            modal: true,
+            buttons:"#dlg-buttons",
+            onOpen:function () {
+                debugger;
+                var message1={
+                }
+                var msg1= jQuery.fn.commonPlugin.commonAjaxJson("/tclass/gradeList",message1);
+                $("#tegrade").combobox({disabled: false});
+                $("#teCalss").combobox({disabled: true});
+                $('#tegrade').combobox({
+                    data:msg1.body,
+                    textField:'tcGradeNum',
+                    valueField:'tcGradeNum'
+                });
+                $("#tegrade").combobox({
+                    onSelect: function () {
+                        if ($("#tegrade").combobox('getValue').length > 0) {
+                            $("#teCalss").combobox({disabled: false});
+                            var message={
+                            }
+                            var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tclass/classList",message);
+                            $('#teCalss').combobox({
+                                data:msg.body,
+                                textField:'tcClassNum',
+                                valueField:'tcClassNum'
+                            });
+						}
+                    }
+				})
+                $("#tegrade").combobox('textbox').bind('blur', function(e){
+                    if($("#tegrade").combobox('getValue').length<=0){
+                        $("#teCalss").combobox('clear');
+                        $("#teCalss").combobox({disabled: true});
+                    }
+                })
+                $('#tePolicital').combobox({
+                    data:policital,
+                    textField:'text',
+                    valueField:'text'
+                });
+                $("#teName").removeAttr('readOnly','true');
+            },
+			/*
+			* 新增后刷新页面
+			* */
+			onClose:function () {
+                if(resultNum=="0"){
+                	 $.messager.alert('info','学生添加成功');
+				}else if(resultNum=="1"){
+                    $.messager.alert('warn','学生添加失败');
+                }
+                resultNum="";
+				flag="0";
+                $("#dlg").form('clear');//关闭是清空form表单数据
+                var message={
+                    "teaName":$("#tname").val()
+                    // "teaCalss":
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+                $('#dg').datagrid({
+                    data: msg.body
+                });
+            }
+        });
+    };
+    function searchname() {
+        var mes={
+            "empname":$("#teName").val()
+        }
+        var mesg=jQuery.fn.commonPlugin.commonAjaxJson("/user/selectusername",mes);
+        console.log(mesg);
+        $("#teLoginName").val(mesg.body);
+    }
+
+    /*
+    * 修改
+    * */
+    function updateteacher() {
+        flag="2";
+        var rows = $('#dg').datagrid('getSelections');
+        if(rows==undefined || rows.length != 1){
+            $.messager.alert('info','请选择要修改的一条数据');
+            return false;
+		}
+        $('#dlg').dialog({
+            title: '修改教师信息',
+            width: 600,
+            height: 450,
+            closed: false,
+            cache: false,
+            modal: true,
+            buttons:"#dlg-buttons",
+            onOpen:function () {
+                debugger;
+                var mes={
+                    "tcClassNum":rows[0].teaCalss
+                }
+                var mesg=jQuery.fn.commonPlugin.commonAjaxJson("/tclass/selectGradeNum",mes);
+                $("#tegrade").combobox({disabled: true});
+                $("#teCalss").combobox({disabled: true});
+                $('#tePolicital').combobox({
+                    data:policital,
+                    textField:'text',
+                    valueField:'text'
+                });
+
+				console.log(rows[0]);
+				$("#teaId").val(rows[0].teaId);
+                $("#teName").val(rows[0].teaName);
+                $("#teName").attr('readOnly','true');
+                $("#teLoginName").val(rows[0].teaLoginName);
+                $("#teLoginName").attr('readOnly','true');
+                $("#teCalss").val(rows[0].teaCalss);
+                $("#teClassNum").val(rows[0].teaClassNum);
+                $("#teCardNum").val(rows[0].teaCardNum);
+                if(value=rows[0].teaSex=='男'){
+                    $("input[name='teSex']").val("1").prop("checked", true);
+                }else if(value=rows[0].teaSex=='女'){
+                    $("input[name='teSex']").val("2").prop("checked", true);
+                }
+                $("#teSubject").val(rows[0].teaSubject);
+                $('#tePolicital').combobox('setValue', rows[0].teaPolicital);
+                $('#teCalss').combobox('setValue', rows[0].teaCalss);
+                $('#tegrade').combobox('setValue', mesg.body[0].tcGradeNum);
+                $("#tePhone").val(rows[0].teaPhone);
+                $("#teQq").val(rows[0].teaQq);
+                $("#teWchart").val(rows[0].teaWchart);
+                $("#teUniversity").val(rows[0].teaUniversity);
+                $("#teEducation").val(rows[0].teaEducation);
+                $("#teAddress").val(rows[0].teaAddress);
+                $("#teMail").val(rows[0].teaMail);
+                $("#cardNum").val(rows[0].teaPeopleCard);
+            },
+            /*
+            * 修改后后刷新页面
+            * */
+            onClose:function () {
+                if(resultNum=="0"){
+                    $.messager.alert('info','修改成功');
+                }else if(resultNum=="1"){
+                    $.messager.alert('warn','修改失败');
+				}else if(resultNum=="2"){
+                    $.messager.alert('warn','修改异常');
+                }
+                resultNum="";
+                flag="0";
+                $("#dlg").form('clear');//关闭是清空form表单数据
+                var message={
+                    "teaName":$("#tname").val()
+                    // "teaCalss":
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+                $('#dg').datagrid({
+                    data: msg.body
+                });
+            }
+        });
+    }
+    /**
+     * 添加/修改数据
+     */
+    function saveStu() {
+        debugger;
+        var message={
+            "teaId":$("#teaId").val(),
+            "teaName":$("#teName").val(),
+            "teaLoginName":$("#teLoginName").val(),
+            "teaCalss":$("#teCalss").combobox('getValue'),
+            "teaClassNum":$("#teClassNum").val(),
+            "teaCardNum":$("#teCardNum").val(),
+            "teaSex":$('input:radio:checked').val(),
+            "teaSubject":$("#teSubject").val(),
+            "teaPolicital":$("#tePolicital").combobox('getValue'),
+            "teaPhone":$("#tePhone").val(),
+            "teaQq":$("#teQq").val(),
+            "teaWchart":$("#teWchart").val(),
+            "teaUniversity":$("#teUniversity").val(),
+            "teaEducation":$("#teEducation").val(),
+            "teaAddress":$("#teAddress").val(),
+            "teaMail":$("#teMail").val(),
+			"teaPeopleCard":$("#cardNum").val()
+        }
+        console.log(message);
+        if(flag=="1"){
+            var msg=jQuery.fn.commonPlugin.commonAjaxJson("/tea/addtea",message);
+            resultNum=msg.header.resultCode;
+        }else if(flag=="2"){
+            var msg1=jQuery.fn.commonPlugin.commonAjaxJson("/tea/updatetea",message);
+            console.log(msg1);
+            resultNum=msg1.header.resultCode;
+        }
+        $('#dlg').dialog("close");
+    }
+
+    /**
+     * 关闭新增/修改页面窗口
+     */
+    function closeUserAddDialog() {
+        $('#dlg').dialog("close");
+
+    }
+
+    /**
+	 * 删除相关
+     */
+    function deleteteacher() {
+        var rows = $('#dg').datagrid('getSelections');
+        if(rows.length<1){
+            $.messager.alert('系统提示','请选择要删除的数据');
+            return false;
+        }else{
+            $.messager.confirm('系统提示', '确定删除'+rows.length+'条数据？', function(r){
+                if (r){
+                    var msg=jQuery.fn.commonPlugin.commonAjaxJson("/tea/deletetea",rows);
+                    if(msg!= undefined && msg.header.resultCode=="0"){
+                        $.messager.alert('info','删除成功');
+                        /*
+                        * 刷新页面
+                        * */
+                        var message={
+                            "teaName":$("#tname").val()
+                            // "teaCalss":
+                        }
+                        var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+                        $('#dg').datagrid({
+                            data: msg.body
+                        });
+					}else {
+                        $.messager.alert('info','删除失败');
+					}
+
+                }
+            });
+		}
+    }
+    /*上传用户-弹框*/
+    function uploadteacher() {
+        $('#dd').dialog({
+            title: '学生导入',
+            width: 400,
+            height: 100,
+            closed: false,
+            cache: false,
+            modal: true,
+            buttons:"#dlg-button",
+			onClose:function () {
+                $("#dd").form('clear');//关闭是清空form表单数据
+                var message={
+                    "teaName":$("#tname").val()
+                    // "teaCalss":
+                }
+                var msg= jQuery.fn.commonPlugin.commonAjaxJson("/tea/tealist",message);
+                $('#dg').datagrid({
+                    data: msg.body
+                });
+            }
+        });
+    }
+    /*上传用户-提交*/
+	function upstu() {
+        var b=checkType();
+        if(b==false){
+            return false;
+        }
+        var formData = new FormData($("#upload")[0]);
+        $.ajax({
+            url: '/tea/importtea',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+				$("#msm").html("上传成功");
+
+            },
+            error: function (data) {
+                // layer.msg("上传失败",{icon: 5});
+                $("#msm").html("上传失败");
+            }
+        })
+	}
+    function checkType(){
+        //得到上传文件的值
+        var fileName=document.getElementById("bu").value;
+        //返回String对象中子字符串最后出现的位置.
+        var seat=fileName.lastIndexOf(".");
+        //返回位于String对象中指定位置的子字符串并转换为小写.
+        var extension=fileName.substring(seat).toLowerCase();
+        //判断允许上传的文件格式
+        //if(extension!=".jpg"&&extension!=".jpeg"&&extension!=".gif"&&extension!=".png"&&extension!=".bmp"){
+        //alert("不支持"+extension+"文件的上传!");
+        //return false;
+        //}else{
+        //return true;
+        //}
+        var allowed=[".xls",".xlsx"];
+        for(var i=0;i<allowed.length;i++){
+            if(!(allowed[i]!=extension)){
+                return true;
+            }
+        }
+        $.messager.alert('提示','格式不支持');
+        return false;
+    }
+	function closestu() {
+        $('#dd').dialog("close");
+    }
+
+    /**
+	 * 导出excle
+     */
+    function excelteacher() {
+        location.href='/tea/exporttea?teaName='+$("#sName").val();
+    }
+</script>
+</head>
+<body style="margin: 1px;">
+<!--用户列表-->
+<table id="dg" class="easyui-datagrid">
+</table>
+<!--功能按钮-->
+<div id="tb">
+	<div>
+		<a href="javascript:addteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">添加</a>
+		<a href="javascript:updateteacher()" class="easyui-linkbutton" iconCls="icon-edit" plain="true">修改</a>
+		<a href="javascript:deleteteacher()" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+		<a href="javascript:uploadteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">上传</a>
+		<a href="javascript:excelteacher()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出</a>
+	</div>
+	<div>
+		&nbsp;姓名：&nbsp;<input type="text" name="tname" id="sName" size="20"/>
+		&nbsp;班级：&nbsp;<input class="easyui-combobox" id="tclass" name="tclass" size="20" />
+		<button class="easyui-linkbutton" iconCls="icon-search" plain="true" id="search" onclick="search()">搜索</button>
+	</div>
+</div>
+<!--详情-->
+<div id="teainfo">
+  	<table cellspacing="5px;">
+  		<tr>
+  			<td>姓  名：</td>
+  			<td><input type="text" id="teaName" name="teaName" class="easyui-validatebox" readonly="readonly"/>
+			</td>
+  			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  			<td>登录名：</td>
+  			<td><input type="text" id="teaLoginName" name="teaLoginName" class="easyui-validatebox" readonly="readonly"/></td>
+  		</tr>
+		<tr>
+			<td>年 级：</td>
+			<td><input type="text" id="grade" name="teaCalss" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>班 级：</td>
+			<td><input type="text" id="teaCalss" name="teaCalss" class="easyui-validatebox" readonly="readonly"/></td>
+		</tr>
+  		<tr>
+  			<td>工  号：</td>
+  			<td><input type="text" id="teaCardNum" name="teaCardNum" class="easyui-validatebox" readonly="readonly"/></td>
+  			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>性  别：</td>
+  			<td><input type="text" id="teaSex" name="teaSex" class="easyui-validatebox" readonly="readonly"/></td>
+  		</tr>
+		<tr>
+			<td>专  业：</td>
+			<td><input type="text" id="teaSubject" name="teaSubject" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>政治面貌：</td>
+			<td><input type="text" id="teaPolicital" name="teaPolicital" class="easyui-validatebox" readonly="readonly"/></td>
+		</tr>
+		<tr>
+			<td>手机号：</td>
+			<td><input type="text" id="teaPhone" name="teaPhone" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>QQ号：</td>
+			<td><input type="text" id="teaQq" name="teaQq" class="easyui-validatebox" readonly="readonly"/></td>
+		</tr>
+		<tr>
+			<td>微  信：</td>
+			<td><input type="text" id="teaWchart" name="teaWchart" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>毕业院校：</td>
+			<td><input type="text" id="teaUniversity" name="teaUniversity" class="easyui-validatebox" readonly="readonly"/></td>
+		</tr>
+		<tr>
+			<td>教育经历：</td>
+			<td><input type="text" id="teaEducation" name="teaEducation" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>住  址：</td>
+			<td><input type="text" id="teaAddress" name="teaAddress" class="easyui-validatebox" readonly="readonly"/></td>
+		</tr>
+		<tr>
+			<td>邮箱：</td>
+			<td><input type="text" id="teaMail" name="teaMail" class="easyui-validatebox" readonly="readonly"/></td>
+			<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td>身份证号：</td>
+			<td><input type="number" id="cardNums" name="cardNum" class="easyui-validatebox" /></td>
+		</tr>
+  	</table>
+</div>
+
+<!--添加/修改-->
+<div id="dlg">
+	<form id="form">
+		<table cellspacing="5px;">
+			<tr>
+				<td>姓 名：</td>
+				<td>
+					<input type="hidden" id="teaId" name="teaId"/>
+					<input type="text" id="teName" name="teName" onblur="searchname()" class="easyui-validatebox" />
+				</td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>登录名：</td>
+				<td><input type="text" id="teLoginName" name="teLoginName" class="easyui-validatebox" readonly="readonly"/></td>
+			</tr>
+			<tr>
+				<td>性 别：</td>
+				<td>男:<input type="radio"  name="teSex" value="1" class="easyui-validatebox" checked="checked"/>
+					女:<input type="radio"  name="teSex" value="2" class="easyui-validatebox" /></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>工  号：</td>
+				<td><input type="number" id="teCardNum" name="teCardNum" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>年 级：</td>
+				<td><input type="text" id="tegrade" name="teaCalss" class="easyui-validatebox"/></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>班 级：</td>
+				<td><input type="text" id="teCalss" name="teaCalss" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>专 业：</td>
+				<td><input type="text" id="teSubject" name="teSubject" class="easyui-validatebox" /></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>政治面貌：</td>
+				<td><input type="text" id="tePolicital" name="tePolicital" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>手机号：</td>
+				<td><input type="number" id="tePhone" name="tePhone" class="easyui-validatebox" /></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>QQ号：</td>
+				<td><input type="number" id="teQq" name="teQq" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>微  信：</td>
+				<td><input type="text" id="teWchart" name="teWchart" class="easyui-validatebox" /></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>毕业院校：</td>
+				<td><input type="text" id="teUniversity" name="teUniversity" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>学   历：</td>
+				<td><input type="text" id="teEducation" name="teEducation" class="easyui-validatebox" /></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>住址：</td>
+				<td><input type="text" id="teAddress" name="teAddress" class="easyui-validatebox" /></td>
+			</tr>
+			<tr>
+				<td>邮 箱：</td>
+				<td><input type="text" id="teMail" name="teMail" class="easyui-validatebox" /></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td>身份证号：</td>
+				<td><input type="number" id="cardNum" name="cardNum" class="easyui-validatebox" /></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+<div id="dlg-buttons">
+	<a href="javascript:saveStu()" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:closeUserAddDialog()" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+<div id="dd">
+	<form  id="upload" action="/auth/importUser" method="post" enctype="multipart/form-data">
+		<input type="file" class="easyui-filebox" id="bu" name="file"/><span id="msm"></span>
+	</form>
+</div>
+<div id="dlg-button">
+	<a href="javascript:upstu()" class="easyui-linkbutton" iconCls="icon-ok" >保存</a>
+	<a href="javascript:closestu()" class="easyui-linkbutton" iconCls="icon-cancel" >关闭</a>
+</div>
+</body>
+</html>

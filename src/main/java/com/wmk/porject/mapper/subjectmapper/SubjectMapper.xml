@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wmk.porject.mapper.subjectmapper.SubjectMapper" >
+  <resultMap id="BaseResultMap" type="com.wmk.porject.bean.Subject" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="sub_code" property="subCode" jdbcType="VARCHAR" />
+    <result column="sub_name" property="subName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sub_code, sub_name
+  </sql>
+  <select id="sublict" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from t_subject
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_subject
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_subject
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wmk.porject.bean.Subject" >
+    insert into t_subject (id, sub_code, sub_name
+      )
+    values (#{id,jdbcType=VARCHAR}, #{subCode,jdbcType=VARCHAR}, #{subName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wmk.porject.bean.Subject" >
+    insert into t_subject
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="subCode != null" >
+        sub_code,
+      </if>
+      <if test="subName != null" >
+        sub_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="subCode != null" >
+        #{subCode,jdbcType=VARCHAR},
+      </if>
+      <if test="subName != null" >
+        #{subName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wmk.porject.bean.Subject" >
+    update t_subject
+    <set >
+      <if test="subCode != null" >
+        sub_code = #{subCode,jdbcType=VARCHAR},
+      </if>
+      <if test="subName != null" >
+        sub_name = #{subName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wmk.porject.bean.Subject" >
+    update t_subject
+    set sub_code = #{subCode,jdbcType=VARCHAR},
+      sub_name = #{subName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
